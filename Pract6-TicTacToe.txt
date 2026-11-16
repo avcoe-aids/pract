@@ -1,0 +1,464 @@
+
+# Tic-Tac-Toe using Reinforcement Learning (Q-Learning)
+
+import random
+
+# 1. Create Environment
+board = [" "] * 9
+
+# Q-table
+Q = {}
+
+# Get state of board
+def get_state(board):
+    return "".join(board)
+
+
+# 2. Define Tic-Tac-Toe Game
+def show_board(board):
+    print()
+    print(board[0], "|", board[1], "|", board[2])
+    print("--+---+--")
+    print(board[3], "|", board[4], "|", board[5])
+    print("--+---+--")
+    print(board[6], "|", board[7], "|", board[8])
+
+
+def check_winner(board):
+    wins = [
+        (0, 1, 2), (3, 4, 5), (6, 7, 8),
+        (0, 3, 6), (1, 4, 7), (2, 5, 8),
+        (0, 4, 8), (2, 4, 6)
+    ]
+
+    for a, b, c in wins:
+        if board[a] != " " and board[a] == board[b] == board[c]:
+            return board[a]
+
+    if " " not in board:
+        return "Draw"
+
+    return None
+
+
+# 3. Build Reinforcement Learning Model
+def choose_action(board, epsilon=0.1):
+    state = get_state(board)
+
+    if state not in Q:
+        Q[state] = [0] * 9
+
+    available = [i for i in range(9) if board[i] == " "]
+
+    # Exploration
+    if random.random() < epsilon:
+        return random.choice(available)
+
+    # Exploitation
+    return max(available, key=lambda x: Q[state][x])
+
+
+# 4. Train the Model
+def train(episodes=5000):
+
+    for episode in range(episodes):
+        board = [" "] * 9
+
+        while True:
+            state = get_state(board)
+
+            # AI move
+            action = choose_action(board)
+            board[action] = "X"
+
+            result = check_winner(board)
+
+            if result == "X":
+                Q[state][action] += 1
+                break
+
+            if result == "Draw":
+                Q[state][action] += 0.5
+                break
+
+            # Random opponent move
+            available = [i for i in range(9) if board[i] == " "]
+            opponent = random.choice(available)
+            board[opponent] = "O"
+
+            result = check_winner(board)
+
+            if result == "O":
+                Q[state][action] -= 1
+                break
+
+            if result == "Draw":
+                Q[state][action] += 0.5
+                break
+
+            new_state = get_state(board)
+
+            if new_state not in Q:
+                Q[new_state] = [0] * 9
+
+            # Q-learning update
+            alpha = 0.1
+            gamma = 0.9
+
+            Q[state][action] += alpha * (
+                gamma * max(Q[new_state]) - Q[state][action]
+            )
+
+    print("Training completed!")
+
+
+# 5. Test the Model
+def play_game():
+
+    board = [" "] * 9
+
+    print("\nTic-Tac-Toe")
+    print("Positions are:")
+    print("0 | 1 | 2")
+    print("--+---+--")
+    print("3 | 4 | 5")
+    print("--+---+--")
+    print("6 | 7 | 8")
+
+    while True:
+
+        # AI move
+        action = choose_action(board, epsilon=0)
+        board[action] = "X"
+
+        print("\nAI Move:")
+        show_board(board)
+
+        result = check_winner(board)
+
+        if result:
+            print("Result:", result)
+            break
+
+        # Human move
+        while True:
+            try:
+                move = int(input("Enter your move (0-8): "))
+
+                if move < 0 or move > 8:
+                    print("Please enter a number between 0 and 8.")
+                elif board[move] != " ":
+                    print("Invalid move! Position already occupied.")
+                else:
+                    break
+
+            except ValueError:
+                print("Please enter a valid number.")
+
+        board[move] = "O"
+
+        result = check_winner(board)
+
+        if result:
+            show_board(board)
+            print("Result:", result)
+            break
+
+
+# 6. Train and Test
+train(5000)
+play_game()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What is Reinforcement Learning?
+
+Reinforcement Learning (RL) is a type of machine learning in which an agent learns by interacting with an environment and receiving rewards or penalties for its actions.
+
+In this practical:
+- AI is the Agent.
+- Tic-Tac-Toe board is the Environment.
+- AI moves are the Actions.
+- Winning, losing and drawing provide Rewards.
+What is Q-Learning?
+
+Q-Learning is a model-free reinforcement learning algorithm that learns which action is best in a particular state by storing values in a Q-table.
+Important terms
+Term	Meaning
+Agent	AI player
+Environment	Tic-Tac-Toe game board
+State	Current position of the board
+Action	Move selected by AI
+Reward	Positive or negative feedback
+Q-table	Stores values of actions for each state
+Exploration	Trying random actions
+Exploitation	Choosing the best-known action
+Learning Rate (Alpha)	Controls how much new information is learned
+Discount Factor (Gamma)	Determines importance of future rewards
+Episode	One complete training game
+
+3. Flow of the code
+1. Import Library
+
+Import random module
+
+2. Create Environment
+
+Create 3×3 board and empty Q-table
+
+3. Define Game Functions
+
+Get state, display board and check winner
+
+4. Build Q-Learning Model
+
+Choose action using exploration and exploitation
+
+5. Train the Model
+
+Play 5,000 games and update Q-values
+
+6. Test the Model
+
+AI plays against the human player
+
+7. Display Result
+
+Show board and winner, loser or draw
+
+
+4. Important code explanations
+Code	Purpose
+import random	Generates random moves
+board = [" "] * 9	Creates an empty 3×3 board
+Q = {}	Creates an empty Q-table
+get_state()	Converts board into a string
+show_board()	Displays the Tic-Tac-Toe board
+check_winner()	Checks winning combinations and draw
+choose_action()	Selects an AI move
+random.random()	Generates a random number
+random.choice()	Selects a random available position
+max()	Selects the action with the highest Q-value
+train()	Trains the AI through repeated games
+play_game()	Allows AI to play against a human
+input()	Takes the human player's move
+try-except	Handles invalid input
+
+5. Important concepts
+A. Tic-Tac-Toe board
+The game uses a 3×3 board containing 9 positions.
+0
+
+
+1
+
+
+2
+
+
+3
+
+
+4
+
+
+5
+
+
+6
+
+
+7
+
+
+8
+
+
+
+Position numbers used to enter moves
+- X = AI player.
+- O = Human player.
+- Empty space = Available position.
+B. Q-table
+Q = {}
+
+
+
+The Q-table stores the values of possible actions for each board state.
+
+For example, if an AI sees a particular board, it checks the Q-values of available positions and chooses the action with the highest value.
+C. Exploration and Exploitation
+if random.random() < epsilon:    return random.choice(available)
+
+
+
+Exploration: AI tries a random move to discover new possibilities.
+return max(available, key=lambda x: Q[state][x])
+
+
+
+Exploitation: AI selects the move with the highest learned Q-value.
+
+In this practical, epsilon = 0.1 by default.
+- 10% chance of exploration.
+- 90% chance of exploitation.
+D. Rewards and penalties
+Game result	Reward
+AI wins	+1
+AI draws	+0.5
+AI loses	-1
+
+These values help AI learn which actions are beneficial.
+E. Q-Learning formula
+\[
+Q(s,a)\leftarrow Q(s,a)+
+\alpha[r+\gamma\max Q(s',a')-Q(s,a)]
+\]
+
+Where:
+Symbol	Meaning
+Q(s,a)	Current Q-value
+α (Alpha)	Learning rate
+r	Immediate reward
+γ (Gamma)	Discount factor
+s	Current state
+s'	Next state
+max Q	Best future Q-value
+
+In your program:
+- Alpha = 0.1
+- Gamma = 0.9
+- Episodes = 5000
+F. Training and Testing
+Training:
+train(5000)
+
+
+
+AI plays 5,000 training games against a random opponent and updates its Q-table.
+
+Testing:
+play_game()
+
+
+
+After training, AI plays against a human.
+
+The AI uses:
+choose_action(board, epsilon=0)
+
+
+
+Here epsilon = 0 means the AI uses exploitation only and does not intentionally explore random moves.
+6. Important viva questions
+Q1. What is Reinforcement Learning?
+
+It is a machine learning technique where an agent learns through rewards and penalties by interacting with an environment.
+
+Q2. What is Q-Learning?
+
+Q-Learning is a model-free reinforcement learning algorithm that learns the best action for each state using a Q-table.
+
+Q3. What is an agent in this practical?
+
+The AI player is the agent.
+
+Q4. What is the environment?
+
+The Tic-Tac-Toe game board is the environment.
+
+Q5. What is a state?
+
+A state represents the current arrangement of X, O and empty positions on the board.
+
+Q6. What is an action?
+
+An action is the position selected by AI for making a move.
+
+Q7. What is a Q-table?
+
+It stores the Q-values of different actions for different game states.
+
+Q8. What is exploration?
+
+Trying new or random actions to discover better moves.
+
+Q9. What is exploitation?
+
+Choosing the action with the highest learned Q-value.
+
+Q10. What is Alpha?
+
+Alpha is the learning rate. It controls how much new information affects the existing Q-value.
+
+Q11. What is Gamma?
+
+Gamma is the discount factor. It determines the importance of future rewards.
+
+Q12. Why do we use 5000 episodes?
+
+To give AI repeated training opportunities to learn better moves.
+
+Q13. What is the difference between training and testing?
+- Training teaches AI through repeated games.
+- Testing checks AI performance against a human.
+Q14. What is model-free learning?
+
+It means the AI learns without needing a predefined model of the environment.
+
+Q15. Why do we use epsilon = 0 during testing?
+
+To make AI choose the best-known action instead of intentionally exploring random actions.
+7. Remember for external viva
+Most important points
+- Practical: Tic-Tac-Toe.
+- Technique: Reinforcement Learning.
+- Algorithm: Q-Learning.
+- Agent: AI player.
+- Environment: Game board.
+- States: Board arrangements.
+- Actions: Available positions.
+- Q-table: Stores action values.
+- Exploration: Random moves.
+- Exploitation: Best-known moves.
+- Alpha: 0.1.
+- Gamma: 0.9.
+- Training episodes: 5000.
+- Rewards: +1, +0.5, -1.
+One-line explanation for viva:
+
+"In this practical, we develop a Tic-Tac-Toe AI using Q-Learning. The AI learns by playing 5,000 games, receiving rewards and penalties, updating its Q-table and then playing against a human."
+8. Important technical point about your code
+Your program is a simplified Q-learning implementation. It updates the Q-value after the AI's move, using the next board state after the opponent's move.
+
+However, it does not explicitly model the opponent's move as part of the Q-learning transition or update all previous moves at the end of an episode. Therefore, it may not learn a perfect Tic-Tac-Toe strategy

@@ -1,0 +1,332 @@
+# AdaBoost, Gradient Boosting and XGBoost
+# Classification on Iris Dataset
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import AdaBoostClassifier,GradientBoostingClassifier
+from xgboost import XGBClassifier
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score
+)
+# 1. Load Dataset
+data=pd.read_csv("iris.csv")
+print(data.head())
+
+# 2. Separate Features and Target
+X = data.iloc[:, 1:5]
+y = data.iloc[:, -1]
+
+# 3. Convert target into numbers
+encoder = LabelEncoder()
+y = encoder.fit_transform(y)
+# 4. Split Dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42
+)
+
+# 5. Create Models
+ada = AdaBoostClassifier(random_state=42)
+gbm = GradientBoostingClassifier(random_state=42)
+xgb = XGBClassifier(
+    random_state=42,
+    eval_metric="mlogloss"
+)
+
+# 6. Train Models
+ada.fit(X_train, y_train)
+gbm.fit(X_train, y_train)
+xgb.fit(X_train, y_train)
+
+# 7. Predictions
+y_ada = ada.predict(X_test)
+y_gbm = gbm.predict(X_test)
+y_xgb = xgb.predict(X_test)
+
+# 8. Evaluation Function
+def evaluate_model(name, y_test, y_pred):
+    print("\n", name)
+    print("Accuracy :", accuracy_score(y_test, y_pred))
+    print("Precision:", precision_score(
+        y_test, y_pred, average="weighted"
+    ))
+    print("Recall   :", recall_score(
+        y_test, y_pred, average="weighted"
+    ))
+
+    print("F1 Score :", f1_score(
+        y_test, y_pred, average="weighted"
+    ))
+
+# 9. Evaluate Models
+evaluate_model("AdaBoost", y_test, y_ada)
+evaluate_model("Gradient Boosting", y_test, y_gbm)
+evaluate_model("XGBoost", y_test, y_xgb)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What is Boosting?
+
+Boosting is an ensemble machine learning technique that combines multiple weak learners to create a strong predictive model.
+
+It trains models sequentially, where later models try to improve the mistakes made by earlier models.
+
+What are the three algorithms?
+1. AdaBoost: Adaptive Boosting. It gives more importance to incorrectly classified data points so that the next learner focuses on them.
+2. Gradient Boosting: Builds models one after another to correct the errors of previous models using gradients of a loss function.
+3. XGBoost: Extreme Gradient Boosting. It is an optimized and efficient implementation of gradient boosting.
+Important terms
+Term	Meaning
+Boosting	Combining weak learners to create a strong model
+Ensemble Learning	Combining multiple machine learning models
+Weak Learner	A simple model that performs slightly better than random guessing
+Label Encoding	Converting text labels into numerical values
+Accuracy	Percentage of correct predictions
+Precision	Correct positive predictions out of all positive predictions
+Recall	Correctly identified actual positive samples
+F1 Score	Balance between precision and recall
+
+3. Flow of the code
+1. Import Libraries
+
+Pandas, Scikit-learn and XGBoost
+
+2. Load Iris Dataset
+
+Read iris.csv and display first 5 rows
+
+3. Separate Features and Target
+
+X = Input features, y = Flower species
+
+4. Label Encoding
+
+Convert flower names into numbers
+
+5. Split Dataset
+
+80% Training and 20% Testing
+
+6. Create Three Models
+
+AdaBoost, Gradient Boosting and XGBoost
+
+7. Train Models
+
+Train all three models using fit()
+
+8. Make Predictions
+
+Predict flower classes using predict()
+
+9. Evaluate Models
+
+Compare Accuracy, Precision, Recall and F1 Score
+
+
+4. Important code explanations
+Code	Purpose
+pd.read_csv()	Loads Iris dataset
+data.head()	Displays first 5 rows
+data.iloc[:, 1:5]	Selects four input features
+data.iloc[:, -1]	Selects the last column as target
+LabelEncoder()	Converts text labels into numbers
+fit_transform()	Learns labels and converts them into numbers
+train_test_split()	Divides data into training and testing
+AdaBoostClassifier()	Creates AdaBoost model
+GradientBoostingClassifier()	Creates Gradient Boosting model
+XGBClassifier()	Creates XGBoost model
+fit()	Trains the model
+predict()	Predicts flower classes
+accuracy_score()	Calculates accuracy
+precision_score()	Calculates precision
+recall_score()	Calculates recall
+f1_score()	Calculates F1 score
+
+5. Important concepts
+A. Iris Dataset
+The Iris dataset contains 150 flower samples belonging to three species.
+
+
+
+
+
+
+
+
+kirenz.github.io
+
+
+It has four input features:
+1. Sepal Length
+2. Sepal Width
+3. Petal Length
+4. Petal Width
+Target classes:
+- Setosa
+- Versicolor
+- Virginica
+B. Label Encoding
+encoder = LabelEncoder()y = encoder.fit_transform(y)
+
+
+
+It converts text categories into numerical values.
+
+For example:
+Flower name	Encoded value
+Setosa	0
+Versicolor	1
+Virginica	2
+
+The exact mapping follows the encoder's alphabetical class order.
+
+Why do we use it?
+
+Machine learning algorithms like XGBoost require numerical target labels for this multiclass classification task.
+C. Difference between three algorithms
+AdaBoost	Gradient Boosting	XGBoost
+Focuses on misclassified samples	Focuses on correcting previous errors	Optimized gradient boosting
+Adjusts sample weights	Uses gradients of loss function	Uses gradients and regularization
+Sequential learning	Sequential learning	Sequential boosting with optimized computation
+
+
+D. Evaluation metrics
+Metric	Meaning
+Accuracy	Overall correct predictions
+Precision	How many predicted class labels are correct
+Recall	How many actual class samples are correctly identified
+F1 Score	Balance between precision and recall
+
+Important: Higher values of these four metrics generally indicate better classification performance.
+E. Evaluation Function
+def evaluate_model(name, y_test, y_pred):
+
+
+
+This function evaluates each model using the same four metrics.
+- name = Model name.
+- y_test = Actual values.
+- y_pred = Predicted values.
+average="weighted"
+
+
+
+It calculates the metrics for each class and combines them by giving more weight to classes with more samples.
+6. Important viva questions
+Q1. What is Boosting?
+
+Boosting is an ensemble learning technique that combines multiple weak learners to create a strong model.
+
+Q2. What is the aim of this practical?
+
+To classify Iris flowers using AdaBoost, Gradient Boosting and XGBoost.
+
+Q3. What is AdaBoost?
+
+AdaBoost stands for Adaptive Boosting. It focuses more on incorrectly classified samples during training.
+
+Q4. What is Gradient Boosting?
+
+It is an ensemble technique that builds models sequentially to reduce previous prediction errors.
+
+Q5. What is XGBoost?
+
+XGBoost stands for Extreme Gradient Boosting. It is an optimized gradient boosting algorithm.
+
+Q6. What is the difference between Bagging and Boosting?
+- Bagging trains multiple models independently.
+- Boosting trains models sequentially to improve previous errors.
+Q7. Why do we use LabelEncoder?
+
+To convert categorical text labels into numerical values.
+
+Q8. Why do we use random_state=42?
+
+To make the train-test split reproducible.
+
+Q9. What is Precision?
+
+Precision measures how many predicted positive samples are actually positive.
+
+Q10. What is Recall?
+
+Recall measures how many actual positive samples are correctly identified.
+
+Q11. What is F1 Score?
+
+F1 Score is the harmonic mean of Precision and Recall.
+
+Q12. Why do we create an evaluation function?
+
+To avoid repeating the same evaluation code for all three models.
+
+Q13. What is average="weighted"?
+
+It calculates the weighted average of evaluation metrics based on the number of samples in each class.
+
+Q14. Which boosting algorithm is used in this practical?
+
+AdaBoost, Gradient Boosting and XGBoost.
+7. Remember for external viva
+Most important points
+- Practical: Iris Flower Classification.
+- Type: Supervised Learning.
+- Task: Classification.
+- Dataset: Iris Dataset.
+- Total records: 150.
+- Input features: 4.
+- Target classes: 3.
+- LabelEncoder: Text to numbers.
+- Algorithms: AdaBoost, Gradient Boosting, XGBoost.
+- Data split: 80:20.
+- Evaluation: Accuracy, Precision, Recall and F1 Score.
+One-line explanation for viva:
+
+"In this practical, we classify Iris flowers using three boosting algorithms: AdaBoost, Gradient Boosting and XGBoost. We convert flower names into numerical labels, train the models and compare their performance using four evaluation metrics."
+
+8. Quick revision: Previous algorithms vs Boosting
+Algorithm	Learning type	Main purpose
+Linear Regression	Supervised	Predict continuous values
+SVM	Supervised	Classification
+K-Means	Unsupervised	Clustering
+AdaBoost	Supervised	Boosting classification
+Gradient Boosting	Supervised	Boosting classification
+XGBoost	Supervised	Optimized boosting
+
+Important practical note: Your code assumes that the last column of iris.csv contains the flower species and the first column is not a feature. Also, XGBoost must be installed (pip install xgboost) before running the program.

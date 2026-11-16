@@ -1,0 +1,332 @@
+
+#Pract2-Regression Analysis
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.metrics import r2_score, mean_squared_error
+
+# 1. Load dataset
+data = pd.read_csv("uber.csv")
+
+print("Shape:", data.shape)
+
+print(data.columns)
+
+# Check null values
+print("\nNull Values:")
+print(data.isnull().sum())
+
+# 2. Pre-processing
+data = data.drop(["Unnamed: 0", "key", "pickup_datetime"], axis=1)
+data = data.dropna()
+
+# Remove invalid values
+data = data[data["fare_amount"] > 0]
+data = data[data["passenger_count"] > 0]
+
+# Create distance feature
+data["distance"] = np.sqrt(
+    (data["dropoff_longitude"] - data["pickup_longitude"])**2 +
+    (data["dropoff_latitude"] - data["pickup_latitude"])**2
+)
+
+print("\nAfter Pre-processing:")
+print(data.head())
+
+# 3. Identify and remove outliers using IQR
+Q1 = data["fare_amount"].quantile(0.25)
+Q3 = data["fare_amount"].quantile(0.75)
+
+IQR = Q3 - Q1
+
+lower = Q1 - 1.5 * IQR
+upper = Q3 + 1.5 * IQR
+
+print("\nOutlier Limits:")
+print("Lower:", lower)
+print("Upper:", upper)
+
+data = data[
+    (data["fare_amount"] >= lower) &
+    (data["fare_amount"] <= upper)
+]
+
+# 4. Correlation
+print("\nCorrelation:")
+print(data.corr())
+
+# 5. Prepare data
+X = data.drop("fare_amount", axis=1)
+y = data["fare_amount"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# 6. Linear Regression
+linear = LinearRegression()
+linear.fit(X_train, y_train)
+pred1 = linear.predict(X_test)
+
+# 7. Ridge Regression
+ridge = Ridge()
+ridge.fit(X_train, y_train)
+pred2 = ridge.predict(X_test)
+
+# 8. Lasso Regression
+lasso = Lasso()
+lasso.fit(X_train, y_train)
+pred3 = lasso.predict(X_test)
+
+# 9. Compare models
+models = ["Linear", "Ridge", "Lasso"]
+predictions = [pred1, pred2, pred3]
+
+for model, pred in zip(models, predictions):
+    r2 = r2_score(y_test, pred)
+    rmse = np.sqrt(mean_squared_error(y_test, pred))
+
+    print("\n", model, "Regression")
+    print("R2 Score :", r2)
+    print("RMSE     :", rmse)
+
+# 10. Correlation graph
+plt.imshow(data.corr(), cmap="coolwarm")
+plt.colorbar()
+plt.title("Correlation Matrix")
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What is Regression?
+
+Regression is a supervised machine learning technique used to predict continuous numerical values, such as price, salary, temperature or fare.
+
+What is Linear Regression?
+
+It predicts the output using a linear relationship between input features and output.
+
+What are Ridge and Lasso Regression?
+- Ridge Regression: Reduces overfitting by adding L2 regularization.
+- Lasso Regression: Reduces overfitting using L1 regularization and can reduce less important feature coefficients to zero.
+Important terms
+Term	Meaning
+Uber dataset	Contains taxi trip and fare details
+Pre-processing	Cleaning and preparing data
+Outliers	Extremely high or low values
+IQR	Interquartile Range, used to detect outliers
+Correlation	Measures the relationship between variables
+Training data	Data used to train the model
+Testing data	Data used to test predictions
+R² Score	Measures how well the model explains variation
+RMSE	Measures prediction error
+
+3. Flow of the code
+1. Import Libraries
+
+Pandas, NumPy, Matplotlib, Scikit-learn
+
+2. Load Uber Dataset
+
+Read CSV, check shape, columns and null values
+
+3. Data Pre-processing
+
+Remove unnecessary columns, null and invalid values
+
+4. Create Distance Feature
+
+Calculate distance using pickup and drop-off coordinates
+
+5. Remove Outliers
+
+Use IQR method on fare_amount
+
+6. Correlation Analysis
+
+Find relationships between numerical columns
+
+7. Split Dataset
+
+80% Training and 20% Testing
+
+8. Train Three Models
+
+Linear Regression, Ridge and Lasso
+
+9. Evaluate Models
+
+Compare R² Score and RMSE
+
+10. Plot Correlation Graph
+
+Display the correlation matrix using a heatmap-style image
+
+
+4. Important code explanations
+Code	Purpose
+pd.read_csv()	Loads Uber dataset
+data.shape	Displays number of rows and columns
+data.isnull().sum()	Checks missing values
+drop()	Removes unnecessary columns
+dropna()	Removes rows containing missing values
+np.sqrt()	Calculates square root for distance
+quantile(0.25)	Calculates Q1
+quantile(0.75)	Calculates Q3
+IQR = Q3 - Q1	Calculates interquartile range
+train_test_split()	Divides data into training and testing
+fit()	Trains the model
+predict()	Predicts Uber fares
+r2_score()	Calculates R² score
+mean_squared_error()	Calculates mean squared error
+plt.imshow()	Displays correlation matrix
+
+5. Important concepts to understand
+A. Distance calculation
+data["distance"] = np.sqrt(    (data["dropoff_longitude"] - data["pickup_longitude"])**2 +    (data["dropoff_latitude"] - data["pickup_latitude"])**2)
+
+
+
+It calculates the straight-line distance between pickup and drop-off coordinates using the Euclidean distance formula.
+
+B. IQR method
+
+IQR is used to identify and remove extreme fare values.
+\[
+IQR = Q3-Q1
+\]
+
+- Q1 = 25th percentile.
+- Q3 = 75th percentile.
+- Lower limit = Q1 − 1.5 × IQR.
+- Upper limit = Q3 + 1.5 × IQR.
+C. Training and testing
+test_size=0.2
+
+
+
+- 80% data is used for training.
+- 20% data is used for testing.
+D. Model comparison
+Model	Technique
+Linear Regression	Basic linear prediction
+Ridge Regression	L2 regularization
+Lasso Regression	L1 regularization
+
+E. Evaluation metrics
+- R² Score: Higher value generally indicates better model performance. A score of 1 means perfect predictions.
+- RMSE: Lower value indicates smaller prediction errors. It is measured in the same units as the fare.
+6. Important viva questions
+Q1. What is the aim of this practical?
+
+To predict Uber taxi fares using three regression algorithms and compare their performance.
+
+Q2. What is regression?
+
+Regression is a supervised learning technique used to predict continuous numerical values.
+
+Q3. Why do we use NumPy?
+
+For mathematical calculations, such as square root and numerical operations.
+
+Q4. Why do we remove null values?
+
+To avoid missing data affecting model training and calculations.
+
+Q5. What are outliers?
+
+Outliers are extremely high or low values that differ significantly from other observations.
+
+Q6. What is IQR?
+
+IQR stands for Interquartile Range. It is used to detect outliers.
+
+Q7. What is the difference between Ridge and Lasso?
+
+Ridge uses L2 regularization, while Lasso uses L1 regularization.
+
+Q8. What is random_state=42?
+
+It ensures that the dataset is split consistently each time the code runs.
+
+Q9. Why do we use R² Score?
+
+To measure how well the model explains variations in the target variable.
+
+Q10. Which is better: R² or RMSE?
+
+Both are useful. R² measures model fit, while RMSE measures prediction error.
+
+Q11. What is correlation?
+
+Correlation measures the strength and direction of the relationship between two variables.
+
+Q12. What is the target variable in this practical?
+
+fare_amount, because we want to predict the Uber fare.
+7. Remember for external viva
+Most important points
+- Problem: Uber fare prediction.
+- Type: Supervised Machine Learning.
+- Task: Regression.
+- Dataset: uber.csv.
+- Target: fare_amount.
+- Outlier detection: IQR.
+- Data split: 80:20.
+- Algorithms: Linear, Ridge and Lasso.
+- Evaluation: R² Score and RMSE.
+- Graph: Correlation matrix.
+One-line explanation:
+
+"In this practical, we clean Uber trip data, calculate distance, remove outliers using IQR, train three regression models, compare their performance using R² and RMSE, and visualize correlations."
+
+Small technical note: The distance calculated here is an approximate Euclidean distance in latitude-longitude coordinates, not actual road distance. Also, the correlation plot uses plt.imshow() without a heatmap library.

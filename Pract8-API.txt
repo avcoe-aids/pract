@@ -1,0 +1,577 @@
+
+# Weather Data Analysis using OpenWeatherMap API
+
+import requests
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. API Key and Multiple Cities
+api_key = "9aa42e4d2bdf42dccc48675b992968cc"
+
+cities = ["Pune", "Mumbai", "Delhi"]
+
+# 2. Get Weather Data from API
+url = "https://api.openweathermap.org/data/2.5/weather"
+
+weather_list = []
+
+for city in cities:
+
+    params = {
+        "q": city,
+        "appid": api_key,
+        "units": "metric"
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=15)
+
+        print("Status Code:", response.status_code)
+
+        response.raise_for_status()
+        data = response.json()
+
+        # 3. Extract Weather Information
+        weather = {
+            "City": city,
+            "Temperature": data["main"]["temp"],
+            "Humidity": data["main"]["humidity"],
+            "Wind Speed": data["wind"]["speed"],
+            "Pressure": data["main"]["pressure"]
+        }
+
+        weather_list.append(weather)
+
+    except requests.exceptions.HTTPError:
+        print("API Error for", city, ":", response.text)
+
+    except requests.exceptions.RequestException as e:
+        print("Connection Error for", city, ":", e)
+
+    except KeyError:
+        print("Weather data missing for", city)
+
+
+# 4. Create DataFrame
+df = pd.DataFrame(weather_list)
+
+if df.empty:
+    print("No weather data available. Check your API key and internet connection.")
+
+else:
+
+    print("\nWeather Information:")
+    print(df)
+
+    # 5. Check and Clean Data
+    print("\nNull Values:")
+    print(df.isnull().sum())
+
+    df = df.dropna()
+
+    # 6. Weather Analysis
+    print("\nAverage Temperature:", df["Temperature"].mean())
+    print("Maximum Temperature:", df["Temperature"].max())
+    print("Minimum Temperature:", df["Temperature"].min())
+    print("Average Humidity:", df["Humidity"].mean())
+    print("Average Wind Speed:", df["Wind Speed"].mean())
+
+    # 7. Visualization
+
+    # Temperature
+    plt.bar(df["City"], df["Temperature"])
+    plt.xlabel("City")
+    plt.ylabel("Temperature (°C)")
+    plt.title("Temperature Comparison")
+    plt.show()
+
+    # Humidity
+    plt.bar(df["City"], df["Humidity"])
+    plt.xlabel("City")
+    plt.ylabel("Humidity (%)")
+    plt.title("Humidity Comparison")
+    plt.show()
+
+    # Wind Speed
+    plt.bar(df["City"], df["Wind Speed"])
+    plt.xlabel("City")
+    plt.ylabel("Wind Speed (m/s)")
+    plt.title("Wind Speed Comparison")
+    plt.show()
+
+    # 8. Correlation
+    correlation = df[
+        ["Temperature", "Humidity", "Wind Speed"]
+    ].corr()
+
+    print("\nCorrelation:")
+    print(correlation)
+
+    plt.imshow(correlation, cmap="coolwarm", vmin=-1, vmax=1)
+
+    plt.colorbar()
+    plt.xticks(range(3), ["Temperature", "Humidity", "Wind Speed"])
+    plt.yticks(range(3), ["Temperature", "Humidity", "Wind Speed"])
+    plt.title("Weather Correlation")
+    plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What is an API?
+API stands for Application Programming Interface.
+
+It allows two applications to communicate with each other and exchange data.
+
+In this practical, Python connects to the OpenWeatherMap API to get weather information about different cities.
+
+What is OpenWeatherMap?
+OpenWeatherMap
+
+It is an online service that provides weather information such as temperature, humidity, wind speed, and atmospheric pressure.
+
+
+Important libraries
+Library	Purpose
+requests	Connects to the API and gets weather data.
+pandas	Stores and analyzes weather data.
+matplotlib	Creates graphs and charts.
+
+3. Flow of the program
+Start
+
+Begin the program
+
+Import libraries
+
+Requests, Pandas and Matplotlib
+
+Set API key and cities
+
+Pune, Mumbai and Delhi
+
+Send API request
+
+Get weather information for each city
+
+Extract weather data
+
+Temperature, humidity, wind speed and pressure
+
+Create DataFrame
+
+Store the collected information
+
+Clean and analyze data
+
+Check null values and calculate statistics
+
+Visualize data
+
+Bar charts and correlation heatmap
+
+End
+
+Display results
+
+
+4. Code explanation step by step
+Step 1: Import libraries
+import requestsimport pandas as pdimport matplotlib.pyplot as plt
+
+
+
+- requests: Used to send requests to the weather API.
+- pandas: Used to store and analyze data.
+- matplotlib.pyplot: Used to display weather data in graphs.
+Step 2: API key and multiple cities
+api_key = "your_api_key"cities = ["Pune", "Mumbai", "Delhi"]url = "https://api.openweathermap.org/data/2.5/weather"weather_list = []
+
+
+
+Explanation:
+- api_key: Unique key used to access the weather API.
+- cities: List of cities whose weather we want.
+- url: API endpoint (address of the weather service).
+- weather_list: Empty list used to store weather information.
+Important security point
+Your code contains an API key. Avoid sharing a real API key publicly. If it has been exposed, consider regenerating it and storing the replacement securely, such as in an environment variable.
+Step 3: Get weather data from API
+for city in cities:    params = {        "q": city,        "appid": api_key,        "units": "metric"    }
+
+
+
+Explanation:
+- for city in cities: Repeats the process for each city.
+- "q": Specifies the city name.
+- "appid": Sends the API key.
+- "units": "metric": Requests temperature in Celsius and wind speed in metres per second.
+For example:
+- Pune → weather information
+- Mumbai → weather information
+- Delhi → weather information
+Step 4: Send API request and handle errors
+try:    response = requests.get(url, params=params, timeout=15)    print("Status Code:", response.status_code)    response.raise_for_status()    data = response.json()
+
+
+
+Code	Meaning
+try	Executes code that may cause an error.
+requests.get()	Sends a GET request to the API.
+params	Sends city name, API key and units.
+timeout=15	Waits up to 15 seconds for the request.
+status_code	Displays the HTTP response status.
+raise_for_status()	Raises an error for unsuccessful HTTP responses.
+response.json()	Converts API response into Python dictionary data.
+
+Important status codes:
+Status code	Meaning
+200	Successful request
+401	Invalid API key or unauthorized
+404	City not found
+429	Too many requests
+500	Server error
+
+Step 5: Extract weather information
+weather = {    "City": city,    "Temperature": data["main"]["temp"],    "Humidity": data["main"]["humidity"],    "Wind Speed": data["wind"]["speed"],    "Pressure": data["main"]["pressure"]}weather_list.append(weather)
+
+
+
+This extracts the required information from the API response.
+Field	Meaning	Unit
+City	City name	—
+Temperature	Current temperature	°C
+Humidity	Amount of moisture in air	%
+Wind Speed	Speed of wind	m/s
+Pressure	Atmospheric pressure	hPa
+
+weather_list.append(weather) adds the weather information of each city to the list.
+Step 6: Exception handling
+except requests.exceptions.HTTPError:    print("API Error for", city, ":", response.text)except requests.exceptions.RequestException as e:    print("Connection Error for", city, ":", e)except KeyError:    print("Weather data missing for", city)
+
+
+
+Why do we use exception handling?
+
+It prevents the program from stopping suddenly when an error occurs.
+- HTTPError: Handles HTTP errors, such as an invalid API key or city not found.
+- RequestException: Handles connection problems and request timeouts.
+- KeyError: Handles missing keys in the returned weather data.
+Step 7: Create DataFrame
+df = pd.DataFrame(weather_list)if df.empty:    print("No weather data available. Check your API key and internet connection.")else:    print(df)
+
+
+
+- pd.DataFrame() converts the list into a table.
+- df.empty checks whether the DataFrame contains any rows.
+- If no data is available, an error message is displayed.
+Example of the expected table structure (values are illustrative):
+City	Temperature	Humidity	Wind Speed	Pressure
+Pune	28	55	3.5	1012
+Mumbai	30	70	4.2	1009
+Delhi	25	45	2.8	1015
+
+Step 8: Check and clean data
+print(df.isnull().sum())df = df.dropna()
+
+
+
+- isnull() checks missing values.
+- sum() counts missing values in each column.
+- dropna() removes rows containing missing values.
+Step 9: Weather analysis
+print("Average Temperature:", df["Temperature"].mean())print("Maximum Temperature:", df["Temperature"].max())print("Minimum Temperature:", df["Temperature"].min())print("Average Humidity:", df["Humidity"].mean())print("Average Wind Speed:", df["Wind Speed"].mean())
+
+
+
+Function	Purpose
+mean()	Calculates average value.
+max()	Finds the highest value.
+min()	Finds the lowest value.
+
+For example, average temperature is calculated by:
+\[
+\text{Average}=\frac{\text{Sum of temperatures}}{\text{Number of cities}}
+\]
+
+
+
+
+Original amountsEqual shares101010
+
+
+
+\(\bar{x} = \frac{10 + 10 + 10}{3} = \frac{30}{3} = 10\)
+x̄ is the arithmetic mean (simple average)
+
+\(x_1\)
+
+
+
+
+\(x_2\)
+
+
+
+
+\(x_3\)
+
+
+
+
+
+Remove valueAdd value
+
+
+
+
+
+Give feedback
+
+Step 10: Data visualization
+A. Temperature comparison
+plt.bar(df["City"], df["Temperature"])plt.xlabel("City")plt.ylabel("Temperature (°C)")plt.title("Temperature Comparison")plt.show()
+
+
+
+
+
+
+
+
+
+
+
+vedantu.com
+
+
+- Compares temperatures of different cities.
+- X-axis represents city names.
+- Y-axis represents temperature.
+B. Humidity comparison
+plt.bar(df["City"], df["Humidity"])plt.xlabel("City")plt.ylabel("Humidity (%)")plt.title("Humidity Comparison")plt.show()
+
+
+
+
+
+
+
+
+
+
+
+medium.com
+
+
+- Compares humidity levels between cities.
+- Higher humidity means more moisture in the air.
+C. Wind speed comparison
+plt.bar(df["City"], df["Wind Speed"])plt.xlabel("City")plt.ylabel("Wind Speed (m/s)")plt.title("Wind Speed Comparison")plt.show()
+
+
+
+
+
+
+
+
+
+
+
+mdpi.com
+
+
+- Compares wind speed across different cities.
+- Wind speed is measured in metres per second.
+Step 11: Correlation analysis
+correlation = df[    ["Temperature", "Humidity", "Wind Speed"]].corr()print(correlation)
+
+
+
+What is correlation?
+
+Correlation measures the relationship between two variables.
+
+Correlation values range from -1 to +1.
+Value	Meaning
++1	Perfect positive correlation
+0	No linear correlation
+-1	Perfect negative correlation
+
+For example:
+- Positive correlation: When one variable increases, the other tends to increase.
+- Negative correlation: When one variable increases, the other tends to decrease.
+Correlation heatmap
+plt.imshow(correlation, cmap="coolwarm", vmin=-1, vmax=1)plt.colorbar()plt.xticks(range(3), ["Temperature", "Humidity", "Wind Speed"])plt.yticks(range(3), ["Temperature", "Humidity", "Wind Speed"])plt.title("Weather Correlation")plt.show()
+
+
+
+
+
+
+
+
+
+
+
+medium.com
+
+
+- imshow() displays the correlation matrix as an image.
+- cmap="coolwarm" selects the color scheme.
+- vmin=-1, vmax=1 fixes the color scale.
+- colorbar() displays the scale of correlation values.
+- xticks() and yticks() display variable names on the axes.
+Important: Correlation does not prove that one variable causes another. Also, this practical compares only three cities, so the correlation results are not statistically reliable for drawing broad weather conclusions.
+
+5. Important concepts for viva
+Term	Simple meaning
+API	Allows applications to communicate.
+API Key	Unique key used to access an API.
+Endpoint	URL of an API service.
+GET request	Requests data from a server.
+JSON	Format used to exchange data.
+DataFrame	Table-like data structure in Pandas.
+Exception handling	Handles errors without abruptly stopping the program.
+Correlation	Measures the relationship between variables.
+Heatmap	Uses colors to represent numerical values.
+Real-time data	Recently retrieved or current information.
+
+6. Viva questions and answers
+Q1. What is the main objective of this practical?
+
+To collect weather data from multiple cities using an API, analyze it, and visualize it.
+
+Q2. What is OpenWeatherMap API?
+
+It is an online service that provides weather information through API requests.
+
+Q3. Why do we use the Requests library?
+
+To send HTTP requests and receive weather data from the API.
+
+Q4. What is an API key?
+
+It is a unique key used to authenticate and access an API service.
+
+Q5. What is the use of requests.get()?
+
+It sends a GET request to the API to retrieve weather information.
+
+Q6. Why do we use units="metric"?
+
+To get temperature in Celsius and wind speed in metres per second.
+
+Q7. What does response.json() do?
+
+It converts the JSON response into Python dictionary data.
+
+Q8. What is a status code?
+
+It indicates whether an HTTP request was successful or unsuccessful.
+
+Q9. What is the use of try-except?
+
+It handles errors and prevents unexpected program termination.
+
+Q10. What is a DataFrame?
+
+A DataFrame is a two-dimensional table-like data structure in Pandas.
+
+Q11. What is humidity?
+
+Humidity is the amount of water vapour present in the air.
+
+Q12. What is atmospheric pressure?
+
+It is the pressure exerted by the weight of the atmosphere, commonly measured in hPa.
+
+Q13. What is wind speed measured in?
+
+Metres per second (m/s) in this practical.
+
+Q14. What is correlation?
+
+It measures the strength and direction of the relationship between two variables.
+
+Q15. Why do we use a heatmap?
+
+To visually represent correlation values using different colors.
+
+Q16. What is the purpose of df.empty?
+
+It checks whether the DataFrame has no rows.
+
+Q17. What is the difference between mean(), max(), and min()?
+- mean() calculates average.
+- max() finds the highest value.
+- min() finds the lowest value.
+Q18. What happens if the internet connection is unavailable?
+
+The API request may fail, and the RequestException block handles the error.
+
+Q19. Can we add more cities?
+
+Yes. We can add more city names to the cities list.
+
+Q20. What is the difference between CSV data and API data?
+
+CSV data is read from a stored file, whereas API data is retrieved from an online service.
+7. Important points to remember
+Library
+Requests + Pandas + Matplotlib
+
+
+- API: OpenWeatherMap
+- Cities: Pune, Mumbai, Delhi
+- HTTP method: GET
+- Data format: JSON
+- Units: Metric
+- Weather parameters: Temperature, Humidity, Wind Speed, Pressure
+- Analysis: Mean, Maximum, Minimum
+- Visualization: Bar charts and heatmap
+- Error handling: try-except
+
+One-minute explanation for external viva:
+
+"This practical performs weather data analysis using the OpenWeatherMap API. First, we import Requests, Pandas, and Matplotlib libraries. We provide an API key and city names such as Pune, Mumbai, and Delhi. Using the GET request, we collect weather information in JSON format. Then we extract temperature, humidity, wind speed, and pressure and store them in a Pandas DataFrame. After checking and cleaning the data, we calculate average, maximum, and minimum values. Finally, we create bar charts to compare weather conditions and a correlation heatmap to understand relationships between weather parameters."
+8. Important difference from the previous practical
+Previous practical	Current practical
+Sales Data Analysis	Weather Data Analysis
+Data comes from CSV file	Data comes from online API
+Uses read_csv()	Uses requests.get()
+Analyzes sales and profit	Analyzes weather conditions
+Bar, pie, box plots	Bar charts and heatmap
+Static dataset	API-retrieved weather data
+
+Remember for viva: The main purpose of this practical is to learn how to collect external data using an API and perform analysis on it using Python.

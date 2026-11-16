@@ -1,0 +1,197 @@
+# PCA - Dimensionality Reduction
+
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+# Load dataset
+data = pd.read_csv("Wine dataset.csv")
+
+# Separate input and output
+X = data.iloc[:, 1:]      # All columns except class
+y = data.iloc[:, 0]       # Class column
+
+# Standardize data
+X = StandardScaler().fit_transform(X)
+
+# Apply PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+
+# Print transformed data
+print("PCA Data:")
+print(X_pca)
+
+# Print variance
+print("\nExplained Variance:")
+print(pca.explained_variance_ratio_)
+
+# Plot PCA
+plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y)
+
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.title("PCA - Wine Dataset")
+
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What is PCA?
+
+PCA (Principal Component Analysis) is an unsupervised dimensionality reduction technique used to reduce the number of input features while retaining as much important information (variance) as possible.
+
+Why do we use PCA?
+- Reduces the number of features.
+- Makes complex data easier to visualize.
+- Removes redundant information.
+- Reduces computational complexity.
+- Helps in data analysis.
+Important terms:
+Term Meaning
+Dimensionality	Number of features or columns
+Standardization	Converts features to a common scale
+Principal Components	New features created by PCA
+Variance	Amount of information or variation in data
+Explained Variance Ratio	Percentage of information retained by each component
+
+3. Flow of the code
+
+1. Import Libraries
+
+Pandas, Matplotlib, StandardScaler, PCA
+
+2. Load Dataset
+
+Read Wine dataset.csv
+
+3. Separate Input and Output
+
+X = Features, y = Class
+
+4. Standardization
+
+Convert features to a common scale
+
+5. Apply PCA
+
+Reduce features to 2 components
+
+6. Print Results
+
+Display transformed data and explained variance
+
+7. Plot PCA Graph
+
+Visualize data using two principal components
+
+
+4. Important code explanations
+Code	Purpose
+pd.read_csv()	Loads the CSV dataset
+data.iloc[:, 1:]	Selects all feature columns except the first
+data.iloc[:, 0]	Selects the class column
+StandardScaler()	Standardizes the features
+PCA(n_components=2)	Reduces data to 2 dimensions
+fit_transform()	Learns PCA components and transforms data
+explained_variance_ratio_	Shows information retained by each component
+plt.scatter()	Creates a scatter plot
+plt.show()	Displays the graph
+
+5. Expected output
+The program displays:
+1. PCA Data: Transformed dataset containing two columns (PC1 and PC2).
+2. Explained Variance: Percentage of variance captured by each principal component.
+3. Scatter Plot: Shows the Wine dataset in two dimensions, with different colors representing different classes.
+6. Important viva questions
+Q1. What is PCA?
+
+PCA stands for Principal Component Analysis. It is a dimensionality reduction technique that reduces features while preserving maximum information.
+
+Q2. Is PCA supervised or unsupervised?
+
+PCA is an unsupervised learning technique.
+
+Q3. Why do we use StandardScaler?
+
+To bring all features to a common scale because features may have different ranges.
+
+Q4. What is n_components=2?
+
+It means PCA reduces the dataset to two principal components.
+
+Q5. What are PC1 and PC2?
+
+They are the first and second principal components, representing directions of maximum and next-highest variance.
+
+Q6. What is explained_variance_ratio_?
+
+It tells us how much information (variance) each principal component retains.
+
+Q7. Why do we use a scatter plot?
+
+To visualize the reduced dataset in two dimensions.
+
+Q8. Does PCA remove original columns directly?
+
+No. PCA creates new transformed features called principal components.
+
+7. Remember this for viva
+Most important
+- PCA = Dimensionality Reduction.
+- StandardScaler = Feature scaling.
+- n_components = Number of reduced dimensions.
+- PC1 = Maximum variance.
+- PC2 = Second-highest variance.
+- PCA = Unsupervised technique.
+One-line explanation of the practical:
+
+"We use PCA to reduce the Wine dataset's features into two principal components, retain maximum possible information, and visualize the data using a scatter plot."

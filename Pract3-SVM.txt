@@ -1,0 +1,260 @@
+# SVM - Handwritten Digit Classification
+import matplotlib.pyplot as plt
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report
+
+# 1. Load Digits Dataset
+digits = datasets.load_digits()
+
+X = digits.data
+y = digits.target
+
+print("Dataset shape:", X.shape)
+
+# 2. Split Dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# 3. Create SVM Model
+model = SVC(kernel="rbf")
+
+# Train the model
+model.fit(X_train, y_train)
+
+# 4. Make Predictions
+y_pred = model.predict(X_test)
+
+# 5. Evaluate Model
+print("\nAccuracy:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+# 6. Display Some Test Images
+plt.figure(figsize=(10, 4))
+for i in range(10):
+    plt.subplot(2, 5, i + 1)
+    plt.imshow(X_test[i].reshape(8, 8), cmap="gray")
+    plt.title("Predicted: " + str(y_pred[i]))
+    plt.axis("off")
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What is SVM?
+
+SVM stands for Support Vector Machine. It is a supervised machine learning algorithm used for classification and regression.
+
+In this practical, SVM identifies handwritten digits from 0 to 9.
+
+How does SVM work?
+
+SVM finds the best decision boundary (hyperplane) that separates different classes of data.
+
+Important terms:
+Term	Meaning
+SVM	Support Vector Machine
+Classification	Predicting categories or classes
+Dataset	Collection of handwritten digit images
+Features (X)	Pixel values of images
+Target (y)	Actual digit labels (0–9)
+Kernel	Helps SVM classify complex data
+RBF	Radial Basis Function kernel
+Accuracy	Measures correct predictions
+
+3. Flow of the code
+1. Import Libraries
+
+Matplotlib, sklearn, SVC and evaluation metrics
+
+2. Load Digits Dataset
+
+Load handwritten digits from 0 to 9
+
+3. Separate Input and Output
+
+X = Pixel features, y = Digit labels
+
+4. Split Dataset
+
+80% Training and 20% Testing
+
+5. Create SVM Model
+
+Use SVC with RBF kernel
+
+6. Train Model
+
+Learn patterns from training images
+
+7. Make Predictions
+
+Predict handwritten digits from test data
+
+8. Evaluate Model
+
+Calculate accuracy and classification report
+
+9. Display Test Images
+
+Show 10 handwritten images with predicted labels
+
+
+4. Important code explanations
+Code	Purpose
+datasets.load_digits()	Loads handwritten digit dataset
+digits.data	Stores pixel values of images
+digits.target	Stores actual digit labels
+X.shape	Displays dataset dimensions
+train_test_split()	Splits data into training and testing
+SVC()	Creates Support Vector Classifier
+kernel="rbf"	Uses RBF kernel for classification
+model.fit()	Trains the SVM model
+model.predict()	Predicts digit labels
+accuracy_score()	Calculates prediction accuracy
+classification_report()	Displays precision, recall and F1-score
+plt.imshow()	Displays handwritten digit images
+reshape(8, 8)	Converts pixel values into an 8×8 image
+plt.subplot()	Displays multiple images in one figure
+
+5. Important concepts
+A. Digits Dataset
+
+The built-in Scikit-learn digits dataset contains:
+- 1,797 handwritten digit images.
+- Digits from 0 to 9.
+- Each image has 8 × 8 pixels.
+- Each image contains 64 features.
+
+
+
+
+
+
+
+
+medium.com
+
+
+B. RBF Kernel
+
+RBF stands for Radial Basis Function.
+
+It helps SVM classify data when the relationship between classes is non-linear.
+
+C. Evaluation metrics
+Metric	Meaning
+Accuracy	Overall percentage of correct predictions
+Precision	How many predicted positive results are correct
+Recall	How many actual positive results are correctly identified
+F1-score	Balance between precision and recall
+Support	Number of actual samples in each class
+
+D. Image visualization
+plt.imshow(X_test[i].reshape(8, 8), cmap="gray")
+
+
+
+- X_test[i] selects one test image.
+- reshape(8,8) converts 64 pixel values into an 8×8 matrix.
+- cmap="gray" displays the image in grayscale.
+6. Important viva questions
+Q1. What is SVM?
+
+SVM stands for Support Vector Machine. It is a supervised machine learning algorithm used for classification and regression.
+
+Q2. What is the aim of this practical?
+
+To recognize handwritten digits from 0 to 9 using SVM.
+
+Q3. What is the size of each digit image?
+
+8 × 8 pixels.
+
+Q4. How many features are present in each image?
+
+64 features (8 × 8 = 64).
+
+Q5. What is the total number of images?
+
+1,797 images.
+
+Q6. What is SVC?
+
+SVC stands for Support Vector Classifier. It is used to perform classification using SVM.
+
+Q7. What is a kernel in SVM?
+
+A kernel helps SVM identify decision boundaries between different classes.
+
+Q8. Why do we use RBF kernel?
+
+Because it can handle non-linear relationships between data points.
+
+Q9. What is the purpose of model.fit()?
+
+It trains the model using training data.
+
+Q10. What is the purpose of model.predict()?
+
+It predicts the digit labels for test images.
+
+Q11. What is classification_report()?
+
+It displays precision, recall, F1-score and support for each class.
+
+Q12. Why do we use reshape(8,8)?
+
+To convert 64 pixel values into an 8×8 image for visualization.
+
+Q13. Is SVM supervised or unsupervised?
+
+SVM is a supervised machine learning algorithm.
+7. Remember for external viva
+Most important points
+- Algorithm: SVM.
+- Full form: Support Vector Machine.
+- Type: Supervised Learning.
+- Task: Classification.
+- Dataset: Digits Dataset.
+- Total images: 1,797.
+- Image size: 8 × 8.
+- Features: 64.
+- Classes: 10 (0–9).
+- Kernel: RBF.
+- Data split: 80:20.
+- Evaluation: Accuracy and Classification Report.
+One-line explanation for viva:
+
+"In this practical, we use the SVM algorithm with an RBF kernel to classify handwritten digits from 0 to 9, evaluate the model using accuracy and classification metrics, and display the predicted digit images."
+
+
+

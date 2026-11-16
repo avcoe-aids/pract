@@ -1,0 +1,564 @@
+# Customer Churn Data Cleaning and Preparation
+
+import pandas as pd
+import numpy as np
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# 1. Import Dataset
+data = pd.read_csv("Telco-Customer-Churn.csv")
+
+print("First 5 Rows:")
+print(data.head())
+
+# 2. Explore Dataset
+print("\nShape:", data.shape)
+print("\nColumns:")
+print(data.columns)
+
+print("\nData Types:")
+print(data.dtypes)
+
+# 3. Check Missing Values
+print("\nMissing Values:")
+print(data.isnull().sum())
+
+# Convert TotalCharges to numeric
+data["TotalCharges"] = pd.to_numeric(
+    data["TotalCharges"], errors="coerce"
+)
+
+# Fill missing TotalCharges with 0
+data["TotalCharges"] = data["TotalCharges"].fillna(0)
+
+# 4. Remove Duplicate Records
+print("\nDuplicates:", data.duplicated().sum())
+
+data = data.drop_duplicates()
+
+# 5. Check Inconsistent Data
+print("\nGender Values:")
+print(data["gender"].unique())
+
+print("\nContract Values:")
+print(data["Contract"].unique())
+
+# Standardize text values
+data["gender"] = data["gender"].str.strip().str.title()
+data["Contract"] = data["Contract"].str.strip()
+
+# 6. Correct Data Types
+data["SeniorCitizen"] = data["SeniorCitizen"].astype(int)
+data["tenure"] = data["tenure"].astype(int)
+data["MonthlyCharges"] = data["MonthlyCharges"].astype(float)
+data["TotalCharges"] = data["TotalCharges"].astype(float)
+
+# 7. Handle Outliers
+Q1 = data["MonthlyCharges"].quantile(0.25)
+Q3 = data["MonthlyCharges"].quantile(0.75)
+
+IQR = Q3 - Q1
+
+lower = Q1 - 1.5 * IQR
+upper = Q3 + 1.5 * IQR
+
+data = data[
+    (data["MonthlyCharges"] >= lower) &
+    (data["MonthlyCharges"] <= upper)
+]
+
+# 8. Feature Engineering
+data["AverageMonthlySpend"] = (
+    data["TotalCharges"] / data["tenure"].replace(0, 1)
+)
+
+print("\nNew Feature:")
+print(data[["TotalCharges", "tenure",
+            "AverageMonthlySpend"]].head())
+
+# 9. Normalize Numerical Data
+features = [
+    "tenure",
+    "MonthlyCharges",
+    "TotalCharges",
+    "AverageMonthlySpend"
+]
+
+scaler = StandardScaler()
+data[features] = scaler.fit_transform(data[features])
+
+# 10. Split into Training and Testing Data
+X = data.drop(["Churn", "customerID"], axis=1)
+y = data["Churn"]
+
+# Convert Churn into 0 and 1
+y = y.map({"No": 0, "Yes": 1})
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42
+)
+
+print("\nTraining Data:", X_train.shape)
+print("Testing Data:", X_test.shape)
+
+# 11. Export Cleaned Dataset
+data.to_csv("Cleaned_Telco_Customer_Churn.csv", index=False)
+
+print("\nCleaned dataset exported successfully!")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What is Customer Churn?
+Customer churn means customers stop using a company's products or services.
+
+Example: A customer cancels their internet subscription. This is called customer churn.
+What is Data Cleaning?
+Data cleaning is the process of identifying and correcting errors, missing values, duplicate records, and inconsistent data in a dataset.
+What is Data Preparation?
+Data preparation means converting raw data into a suitable format so that it can be used for machine learning.
+Important libraries
+Library	Purpose
+Pandas	Loading, cleaning and manipulating data.
+NumPy	Numerical calculations.
+Scikit-learn	Data preprocessing and splitting.
+
+3. Flow of the program
+Start
+
+
+Import dataset
+Read Telco-Customer-Churn.csv
+
+Explore dataset
+Rows, columns and data types
+
+Handle missing values
+Convert TotalCharges and fill missing values
+
+Remove duplicates
+
+
+Check inconsistent values
+Standardize text values
+
+Correct data types
+
+
+Detect and remove outliers
+Using IQR method
+
+Feature engineering
+Create AverageMonthlySpend
+
+Normalize numerical data
+Using StandardScaler
+
+Split dataset
+Training data and testing data
+
+Export cleaned dataset
+
+
+End
+
+
+
+4. Code explanation step by step
+Step 1: Import libraries
+import pandas as pdimport numpy as npfrom sklearn.model_selection import train_test_splitfrom sklearn.preprocessing import StandardScaler
+
+
+
+- pandas: Used to load and clean datasets.
+- numpy: Used for numerical operations.
+- train_test_split: Divides data into training and testing sets.
+- StandardScaler: Standardizes numerical features.
+Step 2: Import dataset
+data = pd.read_csv("Telco-Customer-Churn.csv")print("First 5 Rows:")print(data.head())
+
+
+
+- read_csv() reads the CSV dataset.
+- head() displays the first five rows.
+- data stores the dataset.
+The Telco Customer Churn dataset contains information about customers, such as gender, contract type, tenure, monthly charges, and churn status.
+Step 3: Explore dataset
+print(data.shape)print(data.columns)print(data.dtypes)
+
+
+
+Function	Meaning
+shape	Shows number of rows and columns.
+columns	Displays column names.
+dtypes	Displays data types of columns.
+
+For example, if the shape is (7043, 21), it means the dataset has 7043 rows and 21 columns.
+Step 4: Check and handle missing values
+print(data.isnull().sum())
+
+
+
+This checks how many missing values are present in each column.
+
+Convert TotalCharges into numeric format:
+data["TotalCharges"] = pd.to_numeric(    data["TotalCharges"], errors="coerce")
+
+
+
+- pd.to_numeric() converts values into numbers.
+- errors="coerce" converts invalid values into NaN (missing values).
+Fill missing values:
+data["TotalCharges"] = data["TotalCharges"].fillna(0)
+
+
+
+- fillna(0) replaces missing values with zero.
+
+Why do we use zero?
+
+In this dataset, some customers with zero tenure have blank TotalCharges. Replacing those blanks with zero is a reasonable preparation choice for those records.
+Step 5: Remove duplicate records
+print(data.duplicated().sum())data = data.drop_duplicates()
+
+
+
+- duplicated() identifies repeated rows.
+- sum() counts duplicates.
+- drop_duplicates() removes duplicate rows.
+Why remove duplicates?
+
+To avoid counting the same customer record multiple times.
+Step 6: Check inconsistent data
+print(data["gender"].unique())print(data["Contract"].unique())
+
+
+
+- unique() displays different values present in a column.
+- It helps identify inconsistent spelling or formatting.
+Standardize text values:
+data["gender"] = data["gender"].str.strip().str.title()data["Contract"] = data["Contract"].str.strip()
+
+
+
+Function	Purpose
+str.strip()	Removes extra spaces.
+str.title()	Converts text into title case.
+
+For example, " male " becomes "Male".
+Step 7: Correct data types
+data["SeniorCitizen"] = data["SeniorCitizen"].astype(int)data["tenure"] = data["tenure"].astype(int)data["MonthlyCharges"] = data["MonthlyCharges"].astype(float)data["TotalCharges"] = data["TotalCharges"].astype(float)
+
+
+
+- astype(int) converts a column into integer format.
+- astype(float) converts a column into decimal format.
+Why correct data types?
+
+Because numerical calculations and machine learning algorithms require data in appropriate formats.
+Step 8: Handle outliers using IQR
+What is an outlier?
+
+An outlier is a value that is unusually high or low compared with most other values.
+
+This practical detects outliers in the MonthlyCharges column.
+Q1 = data["MonthlyCharges"].quantile(0.25)Q3 = data["MonthlyCharges"].quantile(0.75)IQR = Q3 - Q1
+
+
+
+- Q1: First quartile (25th percentile).
+- Q3: Third quartile (75th percentile).
+- IQR: Interquartile range.
+Formula:
+\[
+IQR=Q3-Q1
+\]
+
+Calculate lower and upper limits:
+lower = Q1 - 1.5 * IQRupper = Q3 + 1.5 * IQR
+
+
+
+\[
+Lower=Q1-1.5(IQR)
+\]
+
+\[
+Upper=Q3+1.5(IQR)
+\]
+
+Remove outliers:
+data = data[    (data["MonthlyCharges"] >= lower) &    (data["MonthlyCharges"] <= upper)]
+
+
+
+Only records whose MonthlyCharges fall within the calculated limits are retained.
+
+
+
+
+
+
+
+
+paytonyau.github.io
+
+
+Step 9: Feature Engineering
+What is Feature Engineering?
+
+Feature engineering means creating new useful columns from existing data to improve machine learning analysis.
+data["AverageMonthlySpend"] = (    data["TotalCharges"] / data["tenure"].replace(0, 1))
+
+
+
+This creates a new column called AverageMonthlySpend.
+- TotalCharges: Total amount paid by the customer.
+- tenure: Number of months the customer stayed.
+- replace(0, 1): Replaces zero tenure with one to avoid division by zero.
+Formula:
+\[
+AverageMonthlySpend=\frac{TotalCharges}{tenure}
+\]
+
+Step 10: Normalize numerical data
+What is Normalization or Standardization?
+
+It is a preprocessing technique used to bring numerical features onto a comparable scale.
+features = [    "tenure",    "MonthlyCharges",    "TotalCharges",    "AverageMonthlySpend"]scaler = StandardScaler()data[features] = scaler.fit_transform(data[features])
+
+
+
+- features: List of numerical columns.
+- StandardScaler(): Creates a standardization object.
+- fit_transform(): Learns the mean and standard deviation, then transforms the values.
+StandardScaler formula:
+\[
+z=\frac{x-\mu}{\sigma}
+\]
+
+Where:
+- \(x\) = Original value
+- \(\mu\) = Mean
+- \(\sigma\) = Standard deviation
+- \(z\) = Standardized value
+After standardization, each feature generally has mean close to 0 and standard deviation close to 1.
+
+
+
+
+
+
+
+
+medium.com
+
+
+Step 11: Split into training and testing data
+X = data.drop(["Churn", "customerID"], axis=1)y = data["Churn"]
+
+
+
+- X: Input features used for prediction.
+- y: Target variable to be predicted.
+- Churn: Target column.
+- customerID: Removed because it is an identifier, not a useful predictive feature.
+- axis=1: Indicates that columns are being dropped.
+Convert Churn into 0 and 1:
+y = y.map({"No": 0, "Yes": 1})
+
+
+
+Churn value	Converted value
+No	0
+Yes	1
+
+Split the data:
+X_train, X_test, y_train, y_test = train_test_split(    X, y,    test_size=0.2,    random_state=42)
+
+
+
+Parameter	Meaning
+X_train	Training input data
+X_test	Testing input data
+y_train	Training target values
+y_test	Testing target values
+test_size=0.2	20% data for testing
+random_state=42	Keeps the split reproducible
+
+Example: 1000 records
+
+
+
+
+Training: 80% (800)
+
+
+Testing: 20% (200)
+
+
+
+Why do we split data?
+- Training data is used to teach the machine learning model.
+- Testing data is used to evaluate how well the model performs on unseen data.
+Step 12: Export cleaned dataset
+data.to_csv("Cleaned_Telco_Customer_Churn.csv", index=False)print("Cleaned dataset exported successfully!")
+
+
+
+- to_csv() saves the cleaned dataset into a CSV file.
+- index=False prevents an extra index column from being saved.
+Output file: Cleaned_Telco_Customer_Churn.csv
+
+5. Important concepts for viva
+Concept	Simple meaning
+Data cleaning	Removing errors and unwanted data.
+Missing values	Empty values in a dataset.
+Duplicate records	Repeated rows.
+Data types	Type of values stored in columns.
+Outliers	Unusually high or low values.
+IQR	Difference between third and first quartile.
+Feature engineering	Creating new useful features.
+StandardScaler	Standardizes numerical data.
+Training data	Data used to train a model.
+Testing data	Data used to test a model.
+Target variable	Value the model needs to predict.
+Features	Input variables used for prediction.
+
+6. Viva questions and answers
+Q1. What is customer churn?
+
+Customer churn means customers stop using a company's services or products.
+
+Q2. What is the objective of this practical?
+
+To clean and prepare customer churn data for machine learning.
+
+Q3. Which dataset is used?
+
+Telco Customer Churn dataset.
+
+Q4. What is the use of Pandas?
+
+Pandas is used for data loading, cleaning, manipulation, and analysis.
+
+Q5. What is the use of NumPy?
+
+NumPy is used for numerical calculations and array operations.
+
+Q6. What is a missing value?
+
+A missing value is an empty or unavailable value in a dataset.
+
+Q7. What is fillna(0)?
+
+It replaces missing values with zero.
+
+Q8. What is errors="coerce"?
+
+It converts invalid numeric values into NaN.
+
+Q9. What is the use of drop_duplicates()?
+
+It removes repeated records.
+
+Q10. What is an outlier?
+
+An outlier is a value that is significantly different from other values.
+
+Q11. What is IQR?
+
+IQR stands for Interquartile Range. It is the difference between Q3 and Q1.
+
+Q12. What is feature engineering?
+
+It is the process of creating new features from existing data.
+
+Q13. What is StandardScaler?
+
+It is a preprocessing technique that standardizes numerical data.
+
+Q14. What is the difference between fit() and transform()?
+- fit() learns the mean and standard deviation.
+- transform() applies standardization using those values.
+Q15. What is fit_transform()?
+
+It performs both fitting and transformation together.
+
+Q16. What is the purpose of train_test_split()?
+
+It divides the dataset into training and testing parts.
+
+Q17. What is the meaning of test_size=0.2?
+
+It means 20% of the data is reserved for testing.
+
+Q18. Why is customerID removed?
+
+Because it is an identification column and usually does not provide useful predictive information.
+
+Q19. Why is Churn converted into 0 and 1?
+
+To represent the target variable numerically for machine learning.
+
+Q20. What is the difference between X and y?
+- X contains input features.
+- y contains the target output.
+7. Important points to remember
+- Dataset: Telco-Customer-Churn.csv
+- Missing values: fillna()
+- Duplicates: drop_duplicates()
+- Inconsistent text: strip() and title()
+- Outliers: IQR method
+- Feature engineering: AverageMonthlySpend
+- Scaling: StandardScaler
+- Data splitting: 80% training and 20% testing
+- Target: Churn (0 or 1)
+- Output: Cleaned_Telco_Customer_Churn.csv
+
+8. One-minute explanation for external viva
+"This practical performs customer churn data cleaning and preparation using Python. First, we load the Telco Customer Churn dataset using Pandas. Then we explore the dataset and check missing values, duplicates, and inconsistent data. We convert TotalCharges into numeric format and fill missing values with zero. Next, we remove duplicates, correct data types, and handle outliers using the IQR method. We create a new feature called AverageMonthlySpend using feature engineering. After that, we standardize numerical columns using StandardScaler and split the dataset into 80% training and 20% testing data. Finally, we export the cleaned dataset into a CSV file."
+9. Important technical points (for tricky viva questions)
+There are three things to understand about the given code:
+
+1. Data leakage: In a proper machine learning workflow, split the data first and fit StandardScaler only on training data. Then use the same scaler to transform testing data. This avoids using information from the test set during training.
+
+2. Feature engineering: When tenure is zero, the code replaces it with one for division. This avoids an error, but the resulting average spend should be interpreted carefully.
+
+3. Categorical columns: The dataset contains text columns such as Contract, PaymentMethod, and gender. Most machine learning algorithms need these converted into numerical values using techniques such as One-Hot Encoding before model training.
+
+Most important viva question: Is this program building a machine learning model?
+
+Answer: No. This practical only cleans and prepares the dataset. It creates training and testing sets, but does not train or evaluate a machine learning model.

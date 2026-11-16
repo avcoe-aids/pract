@@ -1,0 +1,560 @@
+# Data Wrangling on Real Estate Market
+
+import pandas as pd
+import numpy as np
+
+# 1. Import Dataset
+data = pd.read_csv("house_data.csv")
+
+print("First 5 Rows:")
+print(data.head())
+
+print("\nShape:")
+print(data.shape)
+
+print("\nColumn Names:")
+print(data.columns)
+
+# Clean column names
+data.columns = data.columns.str.strip().str.lower().str.replace(" ", "_")
+
+print("\nCleaned Column Names:")
+print(data.columns)
+
+
+# 2. Handle Missing Values
+print("\nMissing Values:")
+print(data.isnull().sum())
+
+# Remove missing values
+data = data.dropna()
+
+print("\nMissing Values After Cleaning:")
+print(data.isnull().sum())
+
+
+# 3. Data Merging
+# No additional dataset is available, so merging is not required.
+# We continue with the main dataset.
+
+
+# 4. Filter and Subset Data
+
+# Houses with price greater than 500000
+expensive_houses = data[data["price"] > 500000]
+
+print("\nHouses with Price > 500000:")
+print(expensive_houses.head())
+
+# Houses with 3 or more bedrooms
+three_bedroom = data[data["bedrooms"] >= 3]
+
+print("\nHouses with 3 or More Bedrooms:")
+print(three_bedroom.head())
+
+
+# 5. Handle Categorical Variables
+
+# Convert date into datetime
+data["date"] = pd.to_datetime(data["date"])
+
+# Create year column
+data["sale_year"] = data["date"].dt.year
+
+# Convert zipcode into categorical variable
+data["zipcode"] = data["zipcode"].astype(str)
+
+# One-hot encoding for zipcode
+data = pd.get_dummies(data, columns=["zipcode"], drop_first=True)
+
+print("\nData After Encoding:")
+print(data.head())
+
+
+# 6. Aggregation
+
+# Average price by number of bedrooms
+avg_price_bedrooms = data.groupby("bedrooms")["price"].mean()
+
+print("\nAverage Price by Bedrooms:")
+print(avg_price_bedrooms)
+
+# Average price by year
+avg_price_year = data.groupby("sale_year")["price"].mean()
+
+print("\nAverage Price by Year:")
+print(avg_price_year)
+
+
+# 7. Identify and Handle Outliers
+
+# Using IQR method on price
+Q1 = data["price"].quantile(0.25)
+Q3 = data["price"].quantile(0.75)
+
+IQR = Q3 - Q1
+
+lower = Q1 - 1.5 * IQR
+upper = Q3 + 1.5 * IQR
+
+print("\nLower Limit:", lower)
+print("Upper Limit:", upper)
+
+# Remove price outliers
+data = data[
+    (data["price"] >= lower) &
+    (data["price"] <= upper)
+]
+
+print("\nShape After Removing Outliers:")
+print(data.shape)
+
+print("\nFinal Dataset:")
+print(data.head())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What is Data Wrangling?
+Data wrangling is the process of cleaning, transforming, organizing, and preparing raw data so that it can be used for analysis and machine learning.
+
+Example: A real estate dataset contains house prices, bedrooms, sale dates, and zip codes. Data wrangling helps organize this information and remove unwanted values.
+Important libraries
+Library	Purpose
+Pandas	Data cleaning, filtering, grouping and manipulation.
+NumPy	Numerical calculations and array operations.
+
+3. Flow of the program
+Start
+
+
+Import dataset
+Read house_data.csv
+
+Explore dataset
+Rows, columns and column names
+
+Clean column names
+
+
+Handle missing values
+Remove missing records
+
+Filter and subset data
+Price and bedroom conditions
+
+Handle categorical variables
+Date conversion and zipcode encoding
+
+Aggregation
+Average price by bedrooms and year
+
+Identify outliers
+Using IQR method
+
+Remove outliers
+
+
+Display final dataset
+
+
+End
+
+
+
+4. Code explanation step by step
+Step 1: Import libraries
+import pandas as pdimport numpy as np
+
+
+
+- pandas: Used for data manipulation and analysis.
+- numpy: Used for numerical calculations.
+Step 2: Import dataset
+data = pd.read_csv("house_data.csv")print(data.head())print(data.shape)print(data.columns)
+
+
+
+Function	Purpose
+read_csv()	Reads the CSV file.
+head()	Displays the first five rows.
+shape	Displays the number of rows and columns.
+columns	Displays column names.
+
+Example: If shape is (1000, 10), it means there are 1000 rows and 10 columns.
+Step 3: Clean column names
+data.columns = data.columns.str.strip().str.lower().str.replace(" ", "_")
+
+
+
+This line standardizes column names.
+Function	Meaning
+str.strip()	Removes extra spaces.
+str.lower()	Converts column names to lowercase.
+str.replace(" ", "_")	Replaces spaces with underscores.
+
+Example:
+Original name	Cleaned name
+House Price	house_price
+Sale Date	sale_date
+Bedrooms	bedrooms
+
+This makes column names easier to use in Python.
+Step 4: Handle missing values
+print(data.isnull().sum())data = data.dropna()print(data.isnull().sum())
+
+
+
+- isnull() identifies missing values.
+- sum() counts missing values in each column.
+- dropna() removes rows containing missing values.
+Why do we handle missing values?
+
+Missing values can affect calculations and may cause problems during data analysis.
+Step 5: Data merging
+# No additional dataset is available, so merging is not required.
+
+
+
+What is data merging?
+
+Data merging means combining two or more datasets using a common column.
+
+Example: Combining house details with another dataset containing property owner information using a common property ID.
+
+In this practical, only one dataset is available, so merging is not performed.
+Step 6: Filter and subset data
+A. Houses with price greater than 500000
+expensive_houses = data[data["price"] > 500000]print(expensive_houses.head())
+
+
+
+This selects houses whose price is greater than 500000.
+
+B. Houses with three or more bedrooms
+three_bedroom = data[data["bedrooms"] >= 3]print(three_bedroom.head())
+
+
+
+This selects houses having at least three bedrooms.
+Operator	Meaning
+>	Greater than
+<	Less than
+>=	Greater than or equal to
+<=	Less than or equal to
+==	Equal to
+
+What is filtering?
+
+Filtering means selecting only those rows that satisfy a particular condition.
+Step 7: Handle categorical variables
+What are categorical variables?
+
+Categorical variables contain values that represent groups or categories rather than continuous numerical measurements.
+
+Examples:
+- Zipcode
+- Gender
+- Property type
+- Contract type
+A. Convert date into datetime
+data["date"] = pd.to_datetime(data["date"])
+
+
+
+This converts the date column into a proper date format.
+
+B. Create year column
+data["sale_year"] = data["date"].dt.year
+
+
+
+- .dt.year extracts the year from the date.
+- A new column named sale_year is created.
+C. Convert zipcode into string
+data["zipcode"] = data["zipcode"].astype(str)
+
+
+
+This converts zipcode into text format because zipcodes represent locations, not quantities.
+
+D. One-hot encoding
+data = pd.get_dummies(data, columns=["zipcode"], drop_first=True)
+
+
+
+What is One-Hot Encoding?
+
+One-Hot Encoding converts categorical values into separate numerical columns containing 0 and 1.
+
+Example:
+
+Original data:
+Zipcode
+411001
+411002
+411003
+
+After one-hot encoding (illustrative):
+zipcode_411002	zipcode_411003
+0	0
+1	0
+0	1
+
+- get_dummies() performs one-hot encoding.
+- drop_first=True removes the first category to avoid redundant columns.
+
+
+
+
+
+
+
+
+hex.tech
+
+
+Step 8: Aggregation
+What is aggregation?
+
+Aggregation means summarizing data using mathematical operations such as average, sum, minimum, and maximum.
+
+A. Average price by number of bedrooms
+avg_price_bedrooms = data.groupby("bedrooms")["price"].mean()print(avg_price_bedrooms)
+
+
+
+- groupby("bedrooms") groups houses according to bedroom count.
+- ["price"] selects the price column.
+- mean() calculates the average price.
+B. Average price by year
+avg_price_year = data.groupby("sale_year")["price"].mean()print(avg_price_year)
+
+
+
+This calculates the average house price for each sale year.
+Function	Purpose
+groupby()	Groups records.
+mean()	Calculates average.
+sum()	Calculates total.
+min()	Finds minimum.
+max()	Finds maximum.
+
+Step 9: Identify and handle outliers
+What is an outlier?
+
+An outlier is a value that is unusually high or low compared with most other values.
+
+For example, if most houses cost between 200000 and 700000, but one house costs 5 million, it may be an outlier.
+
+This practical uses the IQR method on the price column.
+
+A. Calculate Q1 and Q3
+Q1 = data["price"].quantile(0.25)Q3 = data["price"].quantile(0.75)
+
+
+
+- Q1: First quartile (25%).
+- Q3: Third quartile (75%).
+B. Calculate IQR
+IQR = Q3 - Q1
+
+
+
+\[
+IQR=Q3-Q1
+\]
+
+C. Calculate lower and upper limits
+lower = Q1 - 1.5 * IQRupper = Q3 + 1.5 * IQR
+
+
+
+\[
+Lower=Q1-1.5(IQR)
+\]
+
+\[
+Upper=Q3+1.5(IQR)
+\]
+
+D. Remove outliers
+data = data[    (data["price"] >= lower) &    (data["price"] <= upper)]
+
+
+
+This keeps only houses whose prices fall within the calculated limits.
+
+
+
+
+
+
+
+
+paytonyau.github.io
+
+
+Step 10: Display final dataset
+print(data.shape)print(data.head())
+
+
+
+- shape displays the final number of rows and columns.
+- head() displays the first five rows after cleaning and transformation.
+This gives us the final prepared real estate dataset.
+
+5. Important concepts for viva
+Concept	Simple meaning
+Data wrangling	Cleaning and preparing raw data.
+Data cleaning	Removing incorrect or unwanted data.
+Missing values	Empty values in a dataset.
+Data merging	Combining multiple datasets.
+Filtering	Selecting rows based on conditions.
+Subsetting	Selecting specific rows or columns.
+Categorical variables	Variables representing categories.
+One-Hot Encoding	Converting categories into binary columns.
+Aggregation	Summarizing data.
+Outliers	Unusually high or low values.
+IQR	Difference between Q3 and Q1.
+Datetime	Date and time data format.
+
+6. Viva questions and answers
+Q1. What is data wrangling?
+
+Data wrangling is the process of cleaning, transforming, and organizing raw data for analysis.
+
+Q2. Which dataset is used in this practical?
+
+Real estate or house data stored in house_data.csv.
+
+Q3. Why do we use Pandas?
+
+To load, clean, filter, group, and manipulate data.
+
+Q4. What is the use of head()?
+
+It displays the first five rows of the dataset by default.
+
+Q5. What is the use of shape?
+
+It returns the number of rows and columns.
+
+Q6. Why do we clean column names?
+
+To make column names consistent and easier to access.
+
+Q7. What does dropna() do?
+
+It removes rows containing missing values.
+
+Q8. What is data merging?
+
+It combines two or more datasets using a common column or key.
+
+Q9. What is filtering?
+
+Filtering selects records that satisfy a given condition.
+
+Q10. What is a categorical variable?
+
+A variable that represents groups or categories, such as zipcode or property type.
+
+Q11. What is One-Hot Encoding?
+
+It converts categorical values into separate binary columns containing 0 and 1.
+
+Q12. Why do we use drop_first=True?
+
+It removes the first encoded category to avoid redundant information.
+
+Q13. What is aggregation?
+
+Aggregation summarizes data using operations such as mean, sum, minimum, and maximum.
+
+Q14. What is the use of groupby()?
+
+It groups data according to a particular column.
+
+Q15. What is IQR?
+
+IQR stands for Interquartile Range. It is the difference between the third quartile and first quartile.
+
+Q16. Why do we remove outliers?
+
+To reduce the influence of unusually high or low values on analysis.
+
+Q17. What is pd.to_datetime()?
+
+It converts a column into date and time format.
+
+Q18. What does .dt.year do?
+
+It extracts the year from a date column.
+
+Q19. Why do we convert zipcode into a string?
+
+Because zipcode is an identifier of a location, not a numerical measurement.
+
+Q20. Is data merging performed in this practical?
+
+No. Only one dataset is available, so merging is not required.
+7. Important points to remember
+- Dataset: house_data.csv
+- Library: Pandas and NumPy
+- Column cleaning: strip(), lower(), replace()
+- Missing values: dropna()
+- Filtering: Price greater than 500000 and bedrooms greater than or equal to 3
+- Date conversion: pd.to_datetime()
+- Encoding: pd.get_dummies()
+- Aggregation: groupby() and mean()
+- Outlier detection: IQR method
+
+8. One-minute explanation for external viva
+"This practical performs data wrangling on a real estate dataset using Python Pandas. First, we load the house dataset and explore its rows, columns, and data types. Then we clean the column names and handle missing values using dropna. Next, we filter expensive houses and houses having three or more bedrooms. We convert the date column into datetime format, extract the sale year, and perform one-hot encoding on the zipcode column. After that, we calculate average house prices based on bedrooms and sale year using groupby and mean. Finally, we identify and remove price outliers using the IQR method and display the final cleaned dataset."
+9. Important tricky viva points
+1. Why is NumPy imported but not directly used?
+NumPy is available for numerical operations, but the given program mainly uses Pandas functions. It is not directly used in the current code.
+
+2. Is merging performed?
+No. The program contains a comment explaining that no second dataset is available.
+
+3. Does One-Hot Encoding create more columns?
+Yes. It creates separate binary columns for different zipcode categories.
+
+4. Does this program build a prediction model?
+No. It only cleans, transforms, filters, and summarizes the real estate data.
+
+5. Does removing all missing rows always make sense?
+Not necessarily. dropna() can remove many useful records. Sometimes filling missing values is better.
+
+Remember: The main purpose of this practical is to learn how to transform raw real estate data into clean, organized, and analysis-ready data.

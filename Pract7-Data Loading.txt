@@ -1,0 +1,362 @@
+# Sales Data Analysis using CSV, Excel and JSON
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Load CSV file
+csv_data = pd.read_csv("Superstore.csv", encoding="latin1")
+
+# Create Excel and JSON files from the CSV data
+csv_data.to_excel("Superstore.xlsx", index=False)
+csv_data.to_json("Superstore.json", orient="records")
+
+# Load data from all three formats
+csv_data = pd.read_csv("Superstore.csv", encoding="latin1")
+excel_data = pd.read_excel("Superstore.xlsx")
+json_data = pd.read_json("Superstore.json")
+
+print("CSV Data:")
+print(csv_data.head())
+
+print("\nExcel Data:")
+print(excel_data.head())
+
+print("\nJSON Data:")
+print(json_data.head())
+
+# 2. Check data
+print("\nNull Values:")
+print(csv_data.isnull().sum())
+
+print("\nDuplicates:")
+print(csv_data.duplicated().sum())
+
+# 3. Data Cleaning
+data = csv_data.dropna()
+data = data.drop_duplicates()
+
+# 4. Data Transformation
+data["Order Date"] = pd.to_datetime(data["Order Date"])
+
+data["Profit %"] = (data["Profit"] / data["Sales"]) * 100
+
+# 5. Data Analysis
+print("\nTotal Sales:", data["Sales"].sum())
+print("Average Sales:", data["Sales"].mean())
+print("Total Profit:", data["Profit"].sum())
+
+print("\nSales by Category:")
+print(data.groupby("Category")["Sales"].sum())
+
+# 6. Visualization
+
+# Bar Chart
+data.groupby("Category")["Sales"].sum().plot(kind="bar")
+
+plt.title("Sales by Category")
+plt.xlabel("Category")
+plt.ylabel("Sales")
+plt.show()
+
+# Pie Chart
+data["Category"].value_counts().plot(
+    kind="pie",
+    autopct="%1.1f%%"
+)
+
+plt.title("Category Distribution")
+plt.ylabel("")
+plt.show()
+
+# Box Plot
+plt.boxplot(data["Sales"])
+
+plt.title("Sales Distribution")
+plt.ylabel("Sales")
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What is data analysis?
+Data analysis is the process of collecting, cleaning, transforming, and examining data to find useful information and make decisions.
+What are CSV, Excel, and JSON?
+Format	Meaning	Description
+CSV	Comma-Separated Values	Stores data in rows and columns separated by commas.
+Excel	Spreadsheet format	Stores data in worksheets with rows and columns.
+JSON	JavaScript Object Notation	Stores data in key-value format.
+
+Important Python libraries
+- Pandas: Used to read, clean, process, and analyze data.
+- Matplotlib: Used to create graphs and charts.
+3. Flow of the program
+Start
+
+Load CSV file
+
+Convert CSV into Excel and JSON
+
+Load and display all three formats
+
+Check missing values and duplicates
+
+Clean and transform data
+
+Calculate sales and profit
+
+Create Bar, Pie and Box plots
+
+End
+
+
+4. Code explanation step by step
+Step 1: Import libraries
+import pandas as pdimport matplotlib.pyplot as plt
+
+
+
+- pandas: Used for data analysis.
+- matplotlib.pyplot: Used for data visualization.
+- pd and plt are short names (aliases).
+Step 2: Load CSV and create other files
+csv_data = pd.read_csv("Superstore.csv", encoding="latin1")csv_data.to_excel("Superstore.xlsx", index=False)csv_data.to_json("Superstore.json", orient="records")
+
+
+
+- read_csv() reads the CSV file.
+- encoding="latin1" helps read certain special characters in the dataset.
+- to_excel() converts CSV data into Excel format.
+- to_json() converts CSV data into JSON format.
+- index=False prevents Pandas from adding an extra index column to the Excel file.
+- orient="records" stores each row as a separate JSON object.
+Important: Superstore.csv must be present in the current working folder.
+Step 3: Load data from all three formats
+csv_data = pd.read_csv("Superstore.csv", encoding="latin1")excel_data = pd.read_excel("Superstore.xlsx")json_data = pd.read_json("Superstore.json")
+
+
+
+This loads the same sales dataset from three different file formats.
+print(csv_data.head())print(excel_data.head())print(json_data.head())
+
+
+
+- head() displays the first five rows by default.
+- print() displays the data in the output.
+Step 4: Check missing values and duplicates
+print(csv_data.isnull().sum())print(csv_data.duplicated().sum())
+
+
+
+Function	Purpose
+isnull()	Checks missing values.
+sum()	Counts missing values in each column.
+duplicated()	Identifies duplicate rows.
+sum()	Counts duplicate rows.
+
+Step 5: Data cleaning
+data = csv_data.dropna()data = data.drop_duplicates()
+
+
+
+- dropna() removes rows containing missing values.
+- drop_duplicates() removes repeated rows.
+- Cleaned data is stored in the variable data.
+Step 6: Data transformation
+data["Order Date"] = pd.to_datetime(data["Order Date"])data["Profit %"] = (data["Profit"] / data["Sales"]) * 100
+
+
+
+- pd.to_datetime() converts the Order Date column into date format.
+- Profit percentage is calculated using profit and sales.
+Formula:
+\[
+Profit\%=\frac{Profit}{Sales}\times100
+\]
+
+Step 7: Data analysis
+print(data["Sales"].sum())print(data["Sales"].mean())print(data["Profit"].sum())
+
+
+
+Function	Meaning
+sum()	Calculates total.
+mean()	Calculates average.
+groupby()	Groups data based on a column.
+
+data.groupby("Category")["Sales"].sum()
+
+
+
+This groups products by category and calculates total sales for each category.
+
+For example, categories may include Furniture, Office Supplies, and Technology.
+Step 8: Data visualization
+A. Bar chart
+data.groupby("Category")["Sales"].sum().plot(kind="bar")plt.title("Sales by Category")plt.xlabel("Category")plt.ylabel("Sales")plt.show()
+
+
+
+
+
+
+
+
+
+
+
+medium.com
+
+
+- Displays sales for each category.
+- Helps compare sales between categories.
+- kind="bar" creates a bar chart.
+B. Pie chart
+data["Category"].value_counts().plot(    kind="pie",    autopct="%1.1f%%")plt.title("Category Distribution")plt.ylabel("")plt.show()
+
+
+
+
+
+
+
+
+
+
+
+piratepeel.github.io
+
+
+- Displays the percentage distribution of categories.
+- value_counts() counts records in each category.
+- autopct="%1.1f%%" displays percentages with one decimal place.
+C. Box plot
+plt.boxplot(data["Sales"])plt.title("Sales Distribution")plt.ylabel("Sales")plt.show()
+
+
+
+
+
+
+
+
+
+
+
+stratascratch.com
+
+
+- Shows the distribution of sales values.
+- Helps identify outliers.
+- Displays median, quartiles, and spread of the data.
+5. Important concepts for viva
+Concept	Simple meaning
+Data cleaning	Removing errors and unwanted data.
+Data transformation	Changing data into a useful format.
+Data analysis	Examining data to find information.
+Data visualization	Representing data using graphs.
+Missing values	Empty or unavailable values.
+Duplicates	Repeated records.
+Outliers	Values that are unusually high or low.
+Grouping	Dividing data into categories.
+
+6. Viva questions and answers
+Q1. What is Pandas?
+
+Pandas is a Python library used for data manipulation and analysis.
+
+Q2. What is Matplotlib?
+
+Matplotlib is a Python library used to create graphs and charts.
+
+Q3. What is a CSV file?
+
+CSV stands for Comma-Separated Values. It stores data in tabular form.
+
+Q4. What is JSON?
+
+JSON stands for JavaScript Object Notation. It stores information in key-value pairs.
+
+Q5. Why do we use read_csv()?
+
+To read data from a CSV file.
+
+Q6. What is the purpose of head()?
+
+It displays the first five rows of a dataset by default.
+
+Q7. What is dropna()?
+
+It removes rows containing missing values.
+
+Q8. What is drop_duplicates()?
+
+It removes duplicate records from the dataset.
+
+Q9. What is groupby()?
+
+It groups data according to a particular column.
+
+Q10. What is data visualization?
+
+It is the graphical representation of data using charts and graphs.
+
+Q11. Why do we use a bar chart?
+
+To compare sales between different categories.
+
+Q12. Why do we use a pie chart?
+
+To show the percentage distribution of categories.
+
+Q13. What is a box plot?
+
+A box plot shows data distribution, median, quartiles, and outliers.
+
+Q14. What is to_datetime()?
+
+It converts a column into date and time format.
+
+Q15. Why is index=False used?
+
+To avoid saving the DataFrame index as an additional column in the Excel file.
+7. Important practical points to remember
+- Input file: Superstore.csv
+- Output files: Superstore.xlsx and Superstore.json
+- Dataset library: Pandas
+- Visualization library: Matplotlib
+- Cleaning: dropna() and drop_duplicates()
+- Analysis: sum(), mean(), groupby()
+- Charts: Bar chart, Pie chart, Box plot
+One-minute explanation for external viva:
+
+"This practical performs sales data analysis using CSV, Excel, and JSON files. First, we load the CSV dataset using Pandas and convert it into Excel and JSON formats. Then we check missing values and duplicate records and clean the data. After that, we transform the order date and calculate profit percentage. We analyze total sales, average sales, and total profit. Finally, we visualize the results using bar, pie, and box plots with Matplotlib."
+
+One important note: If any Sales value is zero, the Profit % calculation can produce an undefined value. Also, dropna() removes an entire row if any column is missing, so it may remove more data than necessary.

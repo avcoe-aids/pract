@@ -1,0 +1,574 @@
+# Data Visualization using Matplotlib
+# Air Quality Index (AQI) Analysis
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Load Dataset
+data = pd.read_csv("city_day.csv")
+
+print("First 5 Rows:")
+print(data.head())
+
+# 2. Explore Dataset
+print("\nShape:", data.shape)
+
+print("\nColumns:")
+print(data.columns)
+
+print("\nNull Values:")
+print(data.isnull().sum())
+
+# 3. Select relevant variables
+data["Date"] = pd.to_datetime(data["Date"])
+
+# Select one city
+data = data[data["City"] == "Delhi"]
+
+# Remove rows where AQI is missing
+data = data.dropna(subset=["AQI"])
+
+# 4. AQI Trend over Time
+plt.figure(figsize=(10, 5))
+
+plt.plot(data["Date"], data["AQI"])
+
+plt.xlabel("Date")
+plt.ylabel("AQI")
+plt.title("AQI Trend Over Time")
+plt.xticks(rotation=45)
+plt.show()
+
+# 5. Pollutant Trends
+
+plt.figure(figsize=(10, 5))
+
+plt.plot(data["Date"], data["PM2.5"], label="PM2.5")
+plt.plot(data["Date"], data["PM10"], label="PM10")
+plt.plot(data["Date"], data["CO"], label="CO")
+
+plt.xlabel("Date")
+plt.ylabel("Pollutant Level")
+plt.title("Pollutant Trends Over Time")
+plt.legend()
+plt.xticks(rotation=45)
+plt.show()
+
+# 6. Bar Plot - AQI by Month
+
+data["Month"] = data["Date"].dt.month
+
+monthly_aqi = data.groupby("Month")["AQI"].mean()
+
+plt.bar(monthly_aqi.index, monthly_aqi.values)
+
+plt.xlabel("Month")
+plt.ylabel("Average AQI")
+plt.title("Average AQI by Month")
+plt.show()
+
+# 7. Box Plot - AQI Distribution
+
+plt.boxplot(data["AQI"])
+
+plt.ylabel("AQI")
+plt.title("AQI Distribution")
+plt.show()
+
+# 8. Scatter Plot - AQI vs PM2.5
+
+plt.scatter(data["PM2.5"], data["AQI"])
+
+plt.xlabel("PM2.5")
+plt.ylabel("AQI")
+plt.title("AQI vs PM2.5")
+plt.show()
+
+# 9. Correlation
+
+print("\nCorrelation:")
+print(data[["PM2.5", "PM10", "CO", "AQI"]].corr())
+
+plt.imshow(
+    data[["PM2.5", "PM10", "CO", "AQI"]].corr(),
+    cmap="coolwarm"
+)
+
+plt.colorbar()
+plt.xticks(range(4), ["PM2.5", "PM10", "CO", "AQI"])
+plt.yticks(range(4), ["PM2.5", "PM10", "CO", "AQI"])
+
+plt.title("AQI and Pollutant Correlation")
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What is AQI?
+AQI stands for Air Quality Index.
+
+It is a measurement used to indicate how clean or polluted the air is and how it may affect human health.
+- Higher AQI means more air pollution.
+- Lower AQI means cleaner air.
+What is Data Visualization?
+Data visualization means representing information using graphs and charts so that data can be understood easily.
+What is Matplotlib?
+Matplotlib is a Python library used to create graphs such as line charts, bar charts, scatter plots, and box plots.
+Important libraries
+Library	Purpose
+Pandas	Loading and processing datasets.
+Matplotlib	Creating graphs and charts.
+
+3. Important pollutants
+Pollutant	Meaning
+PM2.5	Fine particles with diameter 2.5 micrometres or smaller.
+PM10	Particles with diameter 10 micrometres or smaller.
+CO	Carbon Monoxide.
+AQI	Air Quality Index.
+
+Remember: PM2.5 and PM10 are particulate matter, while CO is a gaseous pollutant.
+4. Flow of the program
+Start
+
+
+Import libraries
+Pandas and Matplotlib
+
+Load dataset
+city_day.csv
+
+Explore dataset
+Rows, columns and missing values
+
+Select relevant data
+Convert Date and select Delhi
+
+Remove missing AQI values
+
+
+Visualize AQI trend
+Line chart
+
+Visualize pollutant trends
+PM2.5, PM10 and CO
+
+Calculate monthly average AQI
+Bar chart
+
+Analyze AQI distribution
+Box plot
+
+Compare AQI and PM2.5
+Scatter plot
+
+Correlation analysis
+Correlation matrix and heatmap
+
+End
+
+
+
+5. Code explanation step by step
+Step 1: Import libraries
+import pandas as pdimport matplotlib.pyplot as plt
+
+
+
+- pandas: Used to load and manipulate AQI data.
+- matplotlib.pyplot: Used to create graphs and charts.
+Step 2: Load dataset
+data = pd.read_csv("city_day.csv")print("First 5 Rows:")print(data.head())
+
+
+
+- read_csv() reads the CSV dataset.
+- head() displays the first five rows.
+The dataset contains information about cities, dates, AQI values, and different air pollutants.
+Step 3: Explore dataset
+print(data.shape)print(data.columns)print(data.isnull().sum())
+
+
+
+Function	Purpose
+shape	Displays rows and columns.
+columns	Displays column names.
+isnull()	Checks missing values.
+sum()	Counts missing values.
+
+Step 4: Select relevant variables
+A. Convert Date into datetime format
+data["Date"] = pd.to_datetime(data["Date"])
+
+
+
+This converts the Date column into a proper date format.
+
+B. Select one city
+data = data[data["City"] == "Delhi"]
+
+
+
+This filters the dataset and selects only records belonging to Delhi.
+
+C. Remove rows where AQI is missing
+data = data.dropna(subset=["AQI"])
+
+
+
+- dropna() removes missing values.
+- subset=["AQI"] means only rows with missing AQI are removed.
+- Missing values in other pollutant columns may still remain.
+Why select Delhi?
+
+To analyze air quality for one particular city instead of comparing all cities.
+Step 5: AQI trend over time – Line plot
+plt.figure(figsize=(10, 5))plt.plot(data["Date"], data["AQI"])plt.xlabel("Date")plt.ylabel("AQI")plt.title("AQI Trend Over Time")plt.xticks(rotation=45)plt.show()
+
+
+
+
+
+
+
+
+
+
+
+nationalheraldindia.com
+
+
+Explanation:
+- figure(figsize=(10,5)): Sets the graph size.
+- plot(): Creates a line graph.
+- xlabel(): Sets the X-axis label.
+- ylabel(): Sets the Y-axis label.
+- title(): Adds the graph title.
+- xticks(rotation=45): Rotates date labels by 45 degrees.
+- show(): Displays the graph.
+Why use a line plot?
+
+A line plot helps us understand how AQI changes over time.
+Step 6: Pollutant trends – Multiple line plots
+plt.figure(figsize=(10, 5))plt.plot(data["Date"], data["PM2.5"], label="PM2.5")plt.plot(data["Date"], data["PM10"], label="PM10")plt.plot(data["Date"], data["CO"], label="CO")plt.xlabel("Date")plt.ylabel("Pollutant Level")plt.title("Pollutant Trends Over Time")plt.legend()plt.xticks(rotation=45)plt.show()
+
+
+
+
+
+
+
+
+
+
+
+ijepr.avestia.com
+
+
+Explanation:
+- Three line graphs are created for different pollutants.
+- label gives each line a name.
+- legend() displays the names of the lines.
+- show() displays the graph.
+Why use multiple line plots?
+
+To compare how different pollutants change over time.
+Step 7: Bar plot – AQI by month
+data["Month"] = data["Date"].dt.monthmonthly_aqi = data.groupby("Month")["AQI"].mean()plt.bar(monthly_aqi.index, monthly_aqi.values)plt.xlabel("Month")plt.ylabel("Average AQI")plt.title("Average AQI by Month")plt.show()
+
+
+
+
+
+
+
+
+
+
+
+timesofindia.indiatimes.com
+
+
+Explanation:
+- .dt.month extracts the month from the date.
+- groupby("Month") groups data by month.
+- mean() calculates average AQI for each month.
+- plt.bar() creates a bar chart.
+- monthly_aqi.index gives month numbers.
+- monthly_aqi.values gives average AQI values.
+Why use a bar plot?
+
+To compare average AQI values across different months.
+Step 8: Box plot – AQI distribution
+plt.boxplot(data["AQI"])plt.ylabel("AQI")plt.title("AQI Distribution")plt.show()
+
+
+
+
+
+
+
+
+
+
+
+kdnuggets.com
+
+
+Explanation:
+
+A box plot displays:
+- Median
+- First quartile (Q1)
+- Third quartile (Q3)
+- Spread of the data
+- Potential outliers
+Why use a box plot?
+
+To understand the distribution of AQI values and identify unusually high or low values.
+Step 9: Scatter plot – AQI vs PM2.5
+plt.scatter(data["PM2.5"], data["AQI"])plt.xlabel("PM2.5")plt.ylabel("AQI")plt.title("AQI vs PM2.5")plt.show()
+
+
+
+
+
+
+
+
+
+
+
+blog.csdn.net
+
+
+Explanation:
+- scatter() creates a scatter plot.
+- X-axis represents PM2.5.
+- Y-axis represents AQI.
+- Each dot represents one observation.
+Why use a scatter plot?
+
+To understand the relationship between PM2.5 concentration and AQI.
+Step 10: Correlation analysis
+print(data[["PM2.5", "PM10", "CO", "AQI"]].corr())
+
+
+
+What is correlation?
+
+Correlation measures the strength and direction of the relationship between two numerical variables.
+
+Correlation values range from -1 to +1.
+Value	Meaning
++1	Perfect positive correlation
+0	No linear correlation
+-1	Perfect negative correlation
+
+
+
+
+Drag points
+2468102468\(X\)\(Y\)
+
+
+
+
+
+Linear correlation is positive (r = 0.98).
+
+NegativeNear zeroPositive
+
+
+
+
+
+
+
+
+
+
+Give feedback
+
+Create correlation heatmap
+plt.imshow(    data[["PM2.5", "PM10", "CO", "AQI"]].corr(),    cmap="coolwarm")plt.colorbar()plt.xticks(range(4), ["PM2.5", "PM10", "CO", "AQI"])plt.yticks(range(4), ["PM2.5", "PM10", "CO", "AQI"])plt.title("AQI and Pollutant Correlation")plt.show()
+
+
+
+
+
+
+
+
+
+
+
+mdpi.com
+
+
+Explanation:
+- corr() calculates correlation between numerical columns.
+- imshow() displays the matrix as a color image.
+- cmap="coolwarm" selects the color scheme.
+- colorbar() displays the color scale.
+- xticks() displays labels on the X-axis.
+- yticks() displays labels on the Y-axis.
+Important: Correlation does not prove that one pollutant causes an increase in AQI. Also, the AQI is calculated using pollutant measurements, so relationships between AQI and individual pollutants need careful interpretation.
+
+6. Important concepts for viva
+Concept	Simple meaning
+AQI	Air Quality Index.
+Data visualization	Representing data using graphs.
+Line plot	Shows trends over time.
+Bar plot	Compares different categories.
+Box plot	Shows data distribution and outliers.
+Scatter plot	Shows the relationship between two variables.
+Correlation	Measures the relationship between variables.
+Heatmap	Represents values using colors.
+PM2.5	Fine particulate matter.
+PM10	Coarser particulate matter.
+CO	Carbon Monoxide.
+groupby()	Groups records based on a column.
+
+7. Viva questions and answers
+Q1. What is the main objective of this practical?
+
+To analyze and visualize air quality data using Matplotlib.
+
+Q2. What is AQI?
+
+AQI stands for Air Quality Index. It indicates the level of air pollution.
+
+Q3. Which dataset is used?
+
+The city_day.csv dataset.
+
+Q4. Which libraries are used?
+
+Pandas and Matplotlib.
+
+Q5. Why do we use pd.to_datetime()?
+
+To convert the date column into a proper datetime format.
+
+Q6. Why is Delhi selected?
+
+To perform air quality analysis for one specific city.
+
+Q7. What is PM2.5?
+
+It is fine particulate matter with a diameter of 2.5 micrometres or smaller.
+
+Q8. What is PM10?
+
+It is particulate matter with a diameter of 10 micrometres or smaller.
+
+Q9. What is CO?
+
+CO stands for Carbon Monoxide, a harmful gaseous air pollutant.
+
+Q10. Why do we use a line plot?
+
+To show changes and trends in AQI over time.
+
+Q11. Why do we use a bar chart?
+
+To compare average AQI values across months.
+
+Q12. Why do we use a box plot?
+
+To understand data distribution and identify potential outliers.
+
+Q13. What is a scatter plot?
+
+It is a graph that shows the relationship between two numerical variables.
+
+Q14. What is correlation?
+
+It measures the strength and direction of a relationship between two variables.
+
+Q15. What is a heatmap?
+
+A heatmap represents numerical values using different colors.
+
+Q16. What does legend() do?
+
+It displays labels for different lines in a graph.
+
+Q17. What does figsize=(10,5) mean?
+
+It sets the graph width to 10 inches and height to 5 inches.
+
+Q18. What does rotation=45 do?
+
+It rotates the date labels by 45 degrees.
+
+Q19. What is the purpose of dt.month?
+
+It extracts the month from a datetime column.
+
+Q20. What does mean() do?
+
+It calculates the average value.
+8. Important points to remember
+- Dataset: city_day.csv
+- City selected: Delhi
+- Libraries: Pandas and Matplotlib
+- Missing AQI: dropna(subset=["AQI"])
+- Date conversion: pd.to_datetime()
+- Monthly analysis: groupby() and mean()
+- Line plot: AQI and pollutant trends
+- Bar plot: Monthly average AQI
+- Box plot: AQI distribution
+- Scatter plot: AQI vs PM2.5
+- Heatmap: Correlation between pollutants and AQI
+
+9. One-minute explanation for external viva
+"This practical performs data visualization of Air Quality Index using Python Pandas and Matplotlib. First, we load the city_day.csv dataset and explore its rows, columns, and missing values. Then we convert the Date column into datetime format, select Delhi city data, and remove rows where AQI is missing. After that, we create a line plot to show AQI trends over time and multiple line plots to compare PM2.5, PM10, and CO. We calculate monthly average AQI and display it using a bar chart. We also use a box plot to understand AQI distribution and a scatter plot to compare AQI with PM2.5. Finally, we calculate correlation and display it using a heatmap."
+10. Tricky viva points
+1. Why is only AQI missing data removed?
+Because AQI is the main variable being analyzed. Other pollutant columns may still contain missing values.
+
+2. What is the difference between a line plot and a scatter plot?
+A line plot connects points to show trends, while a scatter plot displays individual points to show relationships.
+
+3. Does the program compare multiple cities?
+No. It selects only Delhi.
+
+4. What is the difference between a bar plot and a box plot?
+A bar plot compares values across categories, while a box plot summarizes a numerical distribution.
+
+5. Why do we use correlation?
+To understand how pollutant measurements are associated with AQI and with each other.
+
+One important improvement: The pollutant line plot and correlation analysis may contain missing values in PM2.5, PM10, or CO. You can use dropna(subset=["PM2.5", "PM10", "CO", "AQI"]) on a separate copy of the data before those analyses to avoid incomplete observations.
+
+Remember: This practical mainly teaches how to use different Matplotlib plots to understand air pollution data visually.

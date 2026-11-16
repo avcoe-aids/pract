@@ -1,0 +1,496 @@
+# Data Aggregation - Retail Sales Performance
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Import Dataset
+data = pd.read_csv("Superstore.csv", encoding="latin1")
+
+# 2. Explore Dataset
+print("First 5 Rows:")
+print(data.head())
+
+print("\nShape:")
+print(data.shape)
+
+print("\nColumns:")
+print(data.columns)
+
+print("\nData Types:")
+print(data.dtypes)
+
+print("\nMissing Values:")
+print(data.isnull().sum())
+
+
+# 3. Identify Relevant Variables
+# Region, Category and Sales
+
+print("\nRegions:")
+print(data["Region"].unique())
+
+print("\nProduct Categories:")
+print(data["Category"].unique())
+
+
+# 4. Group Sales by Region
+
+region_sales = data.groupby("Region")["Sales"].sum()
+
+print("\nTotal Sales by Region:")
+print(region_sales)
+
+
+# 5. Visualize Sales by Region
+
+region_sales.plot(kind="bar")
+
+plt.xlabel("Region")
+plt.ylabel("Total Sales")
+plt.title("Sales Distribution by Region")
+plt.show()
+
+
+# Pie Chart
+
+region_sales.plot(
+    kind="pie",
+    autopct="%1.1f%%"
+)
+
+plt.title("Sales Distribution by Region")
+plt.ylabel("")
+plt.show()
+
+
+# 6. Identify Top Performing Region
+
+top_region = region_sales.idxmax()
+top_sales = region_sales.max()
+
+print("\nTop Performing Region:", top_region)
+print("Highest Sales:", top_sales)
+
+
+# 7. Group by Region and Category
+
+region_category_sales = data.groupby(
+    ["Region", "Category"]
+)["Sales"].sum()
+
+print("\nSales by Region and Category:")
+print(region_category_sales)
+
+
+# 8. Stacked Bar Plot
+
+region_category_sales.unstack().plot(
+    kind="bar",
+    stacked=True
+)
+
+plt.xlabel("Region")
+plt.ylabel("Total Sales")
+plt.title("Sales by Region and Category")
+plt.legend(title="Category")
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2. What is Data Aggregation?
+Data aggregation means collecting and summarizing data to get meaningful information.
+
+For example, a retail company may have thousands of sales records. Instead of checking every transaction, we can calculate the total sales of each region.
+
+In this practical, we perform:
+- Total sales by region.
+- Sales percentage by region.
+- Identification of the top-performing region.
+- Sales comparison by region and product category.
+3. Libraries Used
+Library	Purpose
+Pandas	Reading, organizing, grouping and analyzing data
+Matplotlib	Creating graphs and charts
+
+import pandas as pdimport matplotlib.pyplot as plt
+
+
+
+- pandas: Used for data analysis.
+- matplotlib.pyplot: Used to create visualizations such as bar charts and pie charts.
+4. Step-by-Step Code Explanation
+Step 1: Import Dataset
+data = pd.read_csv("Superstore.csv", encoding="latin1")
+
+
+
+- read_csv() reads the CSV file.
+- Superstore.csv is the dataset filename.
+- encoding="latin1" helps read special characters in the file correctly.
+Viva: What is a CSV file?
+
+A CSV (Comma-Separated Values) file stores data in rows and columns, where values are separated by commas.
+Step 2: Explore Dataset
+print("First 5 Rows:")print(data.head())print("\nShape:")print(data.shape)print("\nColumns:")print(data.columns)print("\nData Types:")print(data.dtypes)print("\nMissing Values:")print(data.isnull().sum())
+
+
+
+Function	Meaning
+head()	Displays the first five rows
+shape	Displays number of rows and columns
+columns	Displays all column names
+dtypes	Displays data types of columns
+isnull().sum()	Counts missing values in each column
+
+Why do we explore the dataset?
+
+To understand the dataset's structure, column names, data types and missing values before performing analysis.
+Step 3: Identify Relevant Variables
+print("\nRegions:")print(data["Region"].unique())print("\nProduct Categories:")print(data["Category"].unique())
+
+
+
+Here, we identify the important columns:
+- Region: Represents the geographical sales region.
+- Category: Represents the product category.
+- Sales: Represents the amount of sales.
+What is unique()?
+
+It returns all distinct values from a column without repeating them.
+
+For example, Region may contain:
+- Central
+- East
+- South
+- West
+Step 4: Group Sales by Region
+region_sales = data.groupby("Region")["Sales"].sum()print("\nTotal Sales by Region:")print(region_sales)
+
+
+
+This is the most important step in the practical.
+
+Let's understand it:
+1. groupby("Region") groups all records according to their region.
+2. ["Sales"] selects the Sales column.
+3. .sum() calculates the total sales for each region.
+4. The result is stored in region_sales.
+Example:
+
+Suppose the dataset contains:
+Region	Sales
+East	1000
+West	2000
+East	1500
+West	1000
+
+After grouping:
+Region	Total Sales
+East	2500
+West	3000
+
+This is called data aggregation.
+Step 5: Visualize Sales by Region – Bar Chart
+region_sales.plot(kind="bar")plt.xlabel("Region")plt.ylabel("Total Sales")plt.title("Sales Distribution by Region")plt.show()
+
+
+
+Explanation:
+- plot(kind="bar"): Creates a bar chart.
+- xlabel(): Gives a label to the X-axis.
+- ylabel(): Gives a label to the Y-axis.
+- title(): Adds a chart title.
+- show(): Displays the graph.
+
+
+
+
+
+
+
+
+
+
+Why use a bar chart?
+
+To compare total sales between different regions easily.
+Step 6: Pie Chart
+region_sales.plot(    kind="pie",    autopct="%1.1f%%")plt.title("Sales Distribution by Region")plt.ylabel("")plt.show()
+
+
+
+Explanation:
+- kind="pie" creates a pie chart.
+- autopct="%1.1f%%" displays percentages with one decimal place.
+- ylabel("") removes the default Y-axis label.
+- show() displays the chart.
+
+
+
+
+
+
+
+
+
+
+Why use a pie chart?
+
+To understand what percentage of total sales comes from each region.
+
+For example:
+- East – 25%
+- West – 30%
+- Central – 20%
+- South – 25%
+These percentages are only an example, not the actual output of your dataset.
+Step 7: Identify Top Performing Region
+top_region = region_sales.idxmax()top_sales = region_sales.max()print("\nTop Performing Region:", top_region)print("Highest Sales:", top_sales)
+
+
+
+Explanation:
+- idxmax() returns the index or name of the region with the highest sales.
+- max() returns the highest sales value.
+For example, if West has the highest sales:
+Top Performing Region: West
+Highest Sales: 3000
+
+
+Remember the difference:
+Function	Returns
+max()	Highest value
+idxmax()	Name/index where the highest value occurs
+min()	Lowest value
+idxmin()	Name/index where the lowest value occurs
+
+Step 8: Group by Region and Category
+region_category_sales = data.groupby(    ["Region", "Category"])["Sales"].sum()print("\nSales by Region and Category:")print(region_category_sales)
+
+
+
+Here, we group the data using two columns:
+1. Region
+2. Category
+Then we select Sales and calculate the total using sum().
+
+Example:
+Region	Category	Sales
+East	Furniture	2000
+East	Technology	3000
+West	Furniture	2500
+West	Technology	4000
+
+This helps us understand which product categories perform well in each region.
+Step 9: Stacked Bar Plot
+region_category_sales.unstack().plot(    kind="bar",    stacked=True)plt.xlabel("Region")plt.ylabel("Total Sales")plt.title("Sales by Region and Category")plt.legend(title="Category")plt.show()
+
+
+
+Explanation:
+- unstack() converts the grouped result into a table-like format.
+- kind="bar" creates a bar chart.
+- stacked=True places category bars on top of each other.
+- legend(title="Category") displays the category names.
+
+
+
+
+
+
+
+
+
+
+Why use a stacked bar chart?
+
+It helps compare:
+- Total sales of each region.
+- Contribution of each product category to regional sales.
+
+5. Flow of the Program
+Import Libraries
+
+Pandas and Matplotlib
+
+Load Superstore.csv
+
+Explore Dataset
+
+Rows, columns, data types, missing values
+
+Group and Aggregate Sales
+
+Region and Category using groupby() and sum()
+
+Find Top Performing Region
+
+Display Charts
+
+Bar, Pie and Stacked Bar
+
+
+6. Important Concepts for Viva
+Concept	Simple meaning
+Data Aggregation	Summarizing data
+Grouping	Dividing data into groups
+groupby()	Groups rows based on a column
+sum()	Calculates total
+unique()	Finds distinct values
+idxmax()	Finds the group with the highest value
+unstack()	Converts grouped index levels into columns
+Bar Chart	Compares values
+Pie Chart	Shows percentage contribution
+Stacked Bar	Compares totals and their components
+
+7. Important Viva Questions and Answers
+Q1. What is the aim of this practical?
+
+To analyze retail sales performance by aggregating sales data across different regions and product categories.
+
+Q2. What is data aggregation?
+
+Data aggregation is the process of collecting and summarizing data to get meaningful results.
+
+Q3. Which dataset is used?
+
+The Superstore retail sales dataset.
+
+Q4. Which libraries are used?
+
+Pandas for data analysis and Matplotlib for data visualization.
+
+Q5. What is groupby()?
+
+It groups rows based on one or more columns.
+
+Q6. Why do we use sum()?
+
+To calculate the total sales of each group.
+
+Q7. What is the difference between max() and idxmax()?
+
+max() returns the highest value, whereas idxmax() returns the index or group name associated with that value.
+
+Q8. What is the purpose of unique()?
+
+It displays distinct values from a column.
+
+Q9. Why do we use a bar chart?
+
+To compare sales across different regions.
+
+Q10. Why do we use a pie chart?
+
+To show the percentage contribution of each region to total sales.
+
+Q11. What is a stacked bar chart?
+
+A chart in which multiple categories are stacked together to show their contribution to the total.
+
+Q12. What is unstack()?
+
+It converts an index level of grouped data into columns.
+
+Q13. What is the difference between groupby() and unique()?
+
+groupby() creates groups for analysis, whereas unique() identifies distinct values.
+
+Q14. Can we group data using multiple columns?
+
+Yes. For example:
+data.groupby(["Region", "Category"])["Sales"].sum()
+
+
+
+Q15. What is the difference between data aggregation and data visualization?
+
+Aggregation summarizes the data, while visualization presents the results graphically.
+
+Q16. How do you find the region with the highest sales?
+
+Using idxmax() on the grouped sales result.
+
+Q17. What does autopct="%1.1f%%" mean?
+
+It displays percentages in a pie chart with one digit after the decimal point.
+
+Q18. What is the advantage of retail sales analysis?
+
+It helps businesses identify profitable regions, understand product performance and make better business decisions.
+
+Q19. What does stacked=True do?
+
+It stacks different category values within the same regional bar.
+
+Q20. What happens if the dataset contains missing sales values?
+
+We should inspect and handle missing values before aggregation to avoid misleading results.
+8. Tricky Viva Points
+1. Why is encoding="latin1" used?
+   To handle special characters that may not be read correctly with the default encoding.
+2. Why do we use ["Sales"] after groupby()?
+   Because we want to aggregate only the Sales column.
+3. Why are two columns used in Step 8?
+   To analyze sales separately for every combination of region and category.
+4. Does this practical predict future sales?
+   No. It performs descriptive analysis and summarizes existing sales data.
+5. What is the difference between a normal bar chart and a stacked bar chart?
+   A normal bar chart compares values separately, while a stacked bar chart shows the combined total and its category contributions.
+9. One-Minute Explanation for External Viva
+You can explain your practical like this:
+
+"This practical is about Data Aggregation for Retail Sales Performance. First, I imported Pandas and Matplotlib libraries and loaded the Superstore CSV dataset. Then I explored the dataset using head, shape, columns and dtypes. After that, I identified important variables such as Region, Category and Sales. Using the groupby function and sum method, I calculated total sales for each region. I visualized the results using bar and pie charts. Then I identified the top-performing region using idxmax and max. Finally, I grouped sales by both Region and Category and created a stacked bar chart to compare category-wise sales performance across different regions."
+10. Quick Revision Before Practical Exam
+Remember these important commands
+Command	Purpose
+pd.read_csv()	Load CSV
+data.head()	First five rows
+data.shape	Dataset dimensions
+data.dtypes	Data types
+data.isnull().sum()	Missing values
+unique()	Distinct values
+groupby()	Group records
+sum()	Total sales
+idxmax()	Top region name
+max()	Highest sales
+unstack()	Convert index to columns
+stacked=True	Stacked bar chart
+
+
+Most important line of this practical:
+region_sales = data.groupby("Region")["Sales"].sum()
+
+
+
+This line performs the main data aggregation by calculating total sales for every region.
